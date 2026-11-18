@@ -16,7 +16,10 @@ Même discipline que le lab : écrire le lot dans `FEUILLE_DE_ROUTE.md` avant de
 - **Rien ne part en clair** : ni mot de passe, ni phrase de passe, ni clé de coffre. Le serveur ne
   reçoit que des enveloppes chiffrées et le descripteur public.
 - La clé de coffre utilisable est importée **non extractible** ; sa forme brute n'existe que le
-  temps d'emballer ou de déballer, puis elle est effacée.
+  temps d'emballer ou de déballer, et dans `storage.session` tant que le coffre est déverrouillé
+  (docs/FORMAT.md §5). Jamais dans `storage.local`, jamais dans un message vers un script de contenu.
+- `storage.session` reste au niveau d'accès par défaut (`TRUSTED_CONTEXTS`) : ne jamais appeler
+  `setAccessLevel` pour l'ouvrir aux scripts de contenu.
 - IV neuf à chaque chiffrement ; données associées toujours présentes ; PBKDF2 ≥ 600 000.
 - Aucune bibliothèque de chiffrement maison ni externe : **WebCrypto seulement**.
 - Messages d'erreur fixes : jamais un secret, un contenu ou une réponse serveur recopiée.

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mode d'emploi — Coffre du lab</title>
+  <link rel="stylesheet" href="pages.css">
+</head>
+<body>
+<main class="guide">
+  <h1>Mode d'emploi du coffre</h1>
+
+  <nav class="card" aria-label="Sommaire">
+    <ol>
+      <li><a href="#principe">Comment ça marche, en deux minutes</a></li>
+      <li><a href="#creer">Créer son coffre (la première fois)</a></li>
+      <li><a href="#usb">Enregistrer le fichier de clé sur une clé USB</a></li>
+      <li><a href="#ajouter">Utiliser le coffre sur un autre navigateur ou un autre ordinateur</a></li>
+      <li><a href="#quotidien">Au quotidien : verrouiller, déverrouiller</a></li>
+      <li><a href="#phrase">Changer de phrase de passe</a></li>
+      <li><a href="#perte">J'ai perdu une clé USB / ma phrase de passe</a></li>
+      <li><a href="#interdits">Ce qu'il ne faut jamais faire</a></li>
+    </ol>
+  </nav>
+
+  <section id="principe">
+    <h2>1. Comment ça marche, en deux minutes</h2>
+    <p>Vos mots de passe sont <strong>chiffrés dans votre navigateur</strong>, avant de partir vers le
+      serveur du lab. Le serveur ne garde que des données illisibles : ni l'administrateur, ni un pirate
+      qui y entrerait ne peut les lire.</p>
+    <p>Pour les déchiffrer il faut <strong>deux choses</strong>, que vous seul avez :</p>
+    <ul>
+      <li><strong>le fichier de clé</strong> (il se termine par <code>.coffre-cle</code>), que vous gardez
+        sur une <strong>clé USB</strong> ;</li>
+      <li><strong>votre phrase de passe</strong>, qui protège ce fichier.</li>
+    </ul>
+    <div class="alert warn">
+      <p><strong>Il n'existe aucune récupération.</strong> Si vous perdez toutes les copies du fichier de
+        clé, ou votre phrase de passe, vos mots de passe sont perdus pour toujours. C'est le prix d'un
+        coffre que personne d'autre ne peut ouvrir. D'où les deux clés USB demandées plus bas.</p>
+    </div>
+    <p><strong>Ce qu'il vous faut :</strong> deux clés USB (n'importe lesquelles, même petites : le
+      fichier fait moins d'un kilo-octet) et quelques minutes.</p>
+  </section>
+
+  <section id="creer">
+    <h2>2. Créer son coffre (la première fois)</h2>
+    <ol>
+      <li>Cliquez sur l'icône du coffre dans la barre du navigateur, puis <strong>« Configurer le coffre »</strong>.
+        <span class="muted">(Si l'icône n'est pas visible : cliquez sur la pièce de puzzle 🧩 à droite de la
+          barre d'adresse, puis sur l'épingle à côté de « Coffre du lab ».)</span></li>
+      <li>Choisissez <strong>« Créer mon coffre »</strong>.</li>
+      <li>Saisissez une <strong>phrase de passe</strong>, deux fois.
+        <ul>
+          <li>Au moins 12 caractères ; l'idéal est <strong>cinq mots ou plus sans rapport entre eux</strong>,
+            par exemple <em>« tortue lampadaire ciboulette orage velours »</em> (n'utilisez pas celle-ci !).</li>
+          <li>Ne réutilisez <strong>aucun</strong> mot de passe déjà utilisé ailleurs.</li>
+          <li>Si vous craignez de l'oublier, écrivez-la sur papier et rangez ce papier
+            <strong>à part des clés USB</strong> (jamais dans la même pochette).</li>
+        </ul></li>
+      <li>Cliquez sur <strong>« Créer la clé »</strong>. Le calcul prend quelques secondes, c'est normal :
+        c'est ce qui rend votre phrase difficile à deviner par force brute.</li>
+      <li>Passez à l'enregistrement sur clé USB (section suivante).</li>
+    </ol>
+  </section>
+
+  <section id="usb">
+    <h2>3. Enregistrer le fichier de clé sur une clé USB</h2>
+    <ol>
+      <li>Branchez la <strong>première clé USB</strong>.</li>
+      <li>Cliquez sur <strong>« Enregistrer sur la clé USB… »</strong> (Chrome, Edge) : une fenêtre
+        s'ouvre, choisissez la clé USB dans la colonne de gauche (elle apparaît sous son nom, par exemple
+        « USB », « KINGSTON », « SANDISK » ou une lettre comme <code>E:</code>), puis « Enregistrer ».</li>
+      <li>Sur Firefox, ou si ce bouton n'apparaît pas : cliquez sur <strong>« Télécharger le fichier de clé »</strong>.
+        <ul>
+          <li>Si le navigateur demande où enregistrer : choisissez la clé USB.</li>
+          <li>S'il enregistre sans demander (dans « Téléchargements ») : ouvrez ce dossier
+            (<kbd>Ctrl</kbd>+<kbd>J</kbd> puis « Afficher dans le dossier »), <strong>coupez</strong> le
+            fichier (<kbd>Ctrl</kbd>+<kbd>X</kbd>), ouvrez la clé USB, <strong>collez</strong>
+            (<kbd>Ctrl</kbd>+<kbd>V</kbd>), puis <strong>videz la corbeille</strong>. Le fichier ne doit
+            pas rester sur l'ordinateur.</li>
+        </ul></li>
+      <li>Branchez la <strong>seconde clé USB</strong> et recommencez (le bouton peut être cliqué autant de
+        fois que nécessaire).</li>
+      <li>Cliquez sur <strong>« J'ai enregistré le fichier, continuer »</strong>.</li>
+      <li><strong>Vérification</strong> : l'extension vous demande d'ouvrir le fichier <em>depuis la clé
+        USB</em>. Choisissez-le sur la clé ; un message « ✓ Copie vérifiée » doit apparaître.</li>
+      <li>Cochez les deux cases, puis <strong>« Terminer »</strong>. Votre coffre est prêt.</li>
+      <li><strong>Éjectez</strong> proprement les clés USB (icône « retirer le périphérique » sous
+        Windows, bouton ⏏ sous macOS ou Linux) avant de les débrancher, sinon le fichier peut être
+        incomplet.</li>
+    </ol>
+    <p><strong>Où ranger les deux clés ?</strong> Dans deux endroits différents (par exemple : une à la
+      maison, une chez un proche de confiance ou dans un coffre). Une seule clé, c'est un seul incendie,
+      un seul vol ou une seule panne avant de tout perdre.</p>
+  </section>
+
+  <section id="ajouter">
+    <h2>4. Utiliser le coffre sur un autre navigateur ou un autre ordinateur</h2>
+    <ol>
+      <li>Installez l'extension « Coffre du lab » dans ce navigateur.</li>
+      <li>Branchez l'une de vos clés USB.</li>
+      <li>Icône du coffre → <strong>« Configurer le coffre »</strong> → <strong>« J'ai déjà un fichier de clé »</strong>.</li>
+      <li>Choisissez le fichier <code>.coffre-cle</code> <strong>directement sur la clé USB</strong>
+        (ne le copiez pas d'abord sur l'ordinateur), saisissez votre phrase de passe, puis
+        <strong>« Ouvrir le coffre »</strong>.</li>
+      <li>Éjectez et débranchez la clé USB : le navigateur garde une copie <strong>chiffrée</strong> du
+        fichier, il n'aura plus besoin que de votre phrase de passe.</li>
+    </ol>
+    <p class="muted">Sur un ordinateur qui n'est pas le vôtre (prêté, partagé, au travail) : à la fin,
+      utilisez « Retirer ce coffre de ce navigateur ».</p>
+  </section>
+
+  <section id="quotidien">
+    <h2>5. Au quotidien : verrouiller, déverrouiller</h2>
+    <ul>
+      <li>Le coffre se <strong>verrouille tout seul</strong> après 15 minutes sans utilisation (réglable
+        de 1 minute à 4 heures), et à chaque fermeture du navigateur.</li>
+      <li>Pour l'ouvrir : icône du coffre → phrase de passe → « Déverrouiller ».</li>
+      <li>Pour le fermer tout de suite (vous quittez votre poste) : icône du coffre → « Verrouiller ».</li>
+    </ul>
+  </section>
+
+  <section id="phrase">
+    <h2>6. Changer de phrase de passe</h2>
+    <ol>
+      <li>Déverrouillez le coffre, ouvrez « Gérer le coffre », carte « Changer de phrase de passe ».</li>
+      <li>Saisissez l'ancienne phrase, puis la nouvelle deux fois.</li>
+      <li>Un <strong>nouveau fichier de clé</strong> est produit : enregistrez-le sur vos <strong>deux</strong>
+        clés USB (comme à la section 3), en <strong>remplaçant</strong> l'ancien fichier.</li>
+      <li>Dans vos autres navigateurs : « Retirer ce coffre de ce navigateur », puis importez le nouveau
+        fichier (section 4).</li>
+    </ol>
+    <div class="alert warn"><p>Un <strong>ancien</strong> fichier de clé s'ouvre toujours avec
+      l'<strong>ancienne</strong> phrase. Si vous changez de phrase parce qu'elle a pu être vue par
+      quelqu'un, effacez tous les anciens fichiers.</p></div>
+  </section>
+
+  <section id="perte">
+    <h2>7. J'ai perdu une clé USB / ma phrase de passe</h2>
+    <dl>
+      <dt><strong>J'ai perdu une clé USB, mais j'ai l'autre</strong></dt>
+      <dd>Refaites une copie depuis l'autre clé USB, ou depuis un navigateur où le coffre est installé
+        (« Gérer le coffre » → « Refaire une copie du fichier de clé »). Si la clé a pu être
+        <strong>trouvée par quelqu'un</strong>, changez aussi de phrase de passe (section 6) : le fichier
+        seul ne suffit pas à ouvrir le coffre, mais ne lui laissez pas le temps de deviner la phrase.</dd>
+      <dt><strong>J'ai perdu toutes mes clés USB</strong></dt>
+      <dd>Si un navigateur a encore le coffre installé, refaites tout de suite deux copies depuis ce
+        navigateur. Sinon, le coffre ne peut plus être ouvert.</dd>
+      <dt><strong>J'ai oublié ma phrase de passe</strong></dt>
+      <dd>Elle ne peut être ni retrouvée ni réinitialisée, par personne. Si un navigateur a le coffre
+        <em>encore ouvert</em>, notez sans attendre vos mots de passe importants ; ensuite il faudra créer
+        un nouveau coffre.</dd>
+    </dl>
+  </section>
+
+  <section id="interdits">
+    <h2>8. Ce qu'il ne faut jamais faire</h2>
+    <ul class="donts">
+      <li>❌ Envoyer le fichier de clé par <strong>email</strong>, par <strong>messagerie</strong> (WhatsApp,
+        Signal, SMS…), ou le déposer dans un <strong>service en ligne</strong> (Drive, Dropbox, OneDrive,
+        iCloud, WeTransfer…) — y compris « juste pour le transférer ».</li>
+      <li>❌ Laisser le fichier dans « Téléchargements » ou sur le bureau de l'ordinateur.</li>
+      <li>❌ Ranger la phrase de passe écrite avec les clés USB.</li>
+      <li>❌ Donner votre phrase de passe à qui que ce soit, administrateur du lab compris : personne
+        n'en a jamais besoin.</li>
+      <li>❌ Garder une seule copie du fichier de clé.</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

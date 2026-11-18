@@ -20,7 +20,7 @@ const enc = new TextEncoder();
 const dec = new TextDecoder('utf-8', { fatal: true });
 
 export class CoffreError extends Error {
-  /** @param {'format'|'phrase_courte'|'phrase_ou_fichier'|'autre_cle'|'entree_alteree'} code */
+  /** @param {'format'|'phrase_courte'|'phrase_ou_fichier'|'autre_cle'|'entree_alteree'|'aucun_coffre'|'autre_coffre_installe'|'reglage'} code */
   constructor(code, message) {
     super(message);
     this.name = 'CoffreError';
@@ -68,7 +68,11 @@ async function deriveWrappingKey(passphrase, salt, iterations) {
   );
 }
 
-function importVaultKey(raw) {
+/** Importe une clé brute (32 octets) en clé AES-GCM non extractible. */
+export function importVaultKey(raw) {
+  if (!(raw instanceof Uint8Array) || raw.length !== 32) {
+    throw new CoffreError('format', 'Clé de coffre invalide.');
+  }
   return subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, ['encrypt', 'decrypt']);
 }
 
@@ -150,6 +154,14 @@ export async function openKeyFile(keyFile, passphrase) {
   } finally {
     raw.fill(0);
   }
+}
+
+/**
+ * Ouvre un fichier de clé et rend la clé brute : seulement pour la poser en storage.session
+ * (docs/FORMAT.md §5). L'appelant efface `raw` dès qu'il l'a recopiée.
+ */
+export async function openKeyFileRaw(keyFile, passphrase) {
+  return { keyId: keyFile.key_id, raw: await unwrapRaw(keyFile, passphrase) };
 }
 
 /** Rend un nouveau fichier de clé, même clé de coffre, autre phrase de passe. */

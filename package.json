@@ -1,6 +1,6 @@
 {
   "name": "coffre-navigateur",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "Extension de navigateur : coffre de mots de passe chiffré de bout en bout, déposé dans storage du lab.",
@@ -9,5 +9,7 @@
     "build": "node scripts/build.mjs",
     "essai": "npm run build && node scripts/essai-chromium.cjs"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  }
 }

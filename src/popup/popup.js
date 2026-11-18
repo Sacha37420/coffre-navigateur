@@ -1,3 +1,5 @@
+import { CoffreError } from '../lib/crypto.js';
+import { api, extensionVault } from '../lib/extension.js';
 import { entropyBits, generatePassword } from '../lib/generator.js';
 
 const $ = (id) => document.getElementById(id);
@@ -38,3 +40,36 @@ $('copy').addEventListener('click', async () => {
 });
 
 render();
+
+// ---------- État du coffre ----------
+const vault = extensionVault();
+const openManager = () => { api.runtime.openOptionsPage(); window.close(); };
+
+async function refreshVault() {
+  const { state } = await vault.status();
+  for (const s of ['aucun', 'verrouille', 'deverrouille']) $(`v-${s}`).hidden = s !== state;
+  if (state === 'verrouille') $('v-pass').focus();
+}
+
+async function unlock() {
+  $('v-error').hidden = true;
+  $('v-unlock').disabled = true;
+  try {
+    await vault.unlock($('v-pass').value);
+    $('v-pass').value = '';
+    await refreshVault();
+  } catch (e) {
+    $('v-error').textContent = e instanceof CoffreError ? e.message : 'Une erreur inattendue est survenue.';
+    $('v-error').hidden = false;
+  } finally {
+    $('v-unlock').disabled = false;
+  }
+}
+
+$('v-setup').addEventListener('click', openManager);
+$('v-manage1').addEventListener('click', openManager);
+$('v-manage2').addEventListener('click', openManager);
+$('v-unlock').addEventListener('click', unlock);
+$('v-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') unlock(); });
+$('v-lock').addEventListener('click', async () => { await vault.lock(); await refreshVault(); });
+refreshVault();

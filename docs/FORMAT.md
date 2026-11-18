@@ -92,7 +92,18 @@ Contenu déchiffré :
 
 Aucun secret. Sert à refuser de synchroniser avec un navigateur qui a chargé une autre clé.
 
-## 5. Ce que le chiffrement ne protège pas (limites connues)
+## 5. Dans le navigateur
+
+- `storage.local` : le **fichier de clé** (chiffré, identique au `.coffre-cle`) sous `cle`, et les
+  réglages sous `reglages`. Jamais une clé en clair.
+- `storage.session` (mémoire seulement, vidée à la fermeture du navigateur, inaccessible aux
+  scripts de contenu) : sous `session`, `{ key_id, raw: <b64u, 32 octets>, expires: <ms> }` tant
+  que le coffre est déverrouillé. C'est le seul endroit où la clé brute existe hors d'un calcul :
+  un processus de fond d'extension est arrêté par le navigateur au bout de quelques secondes
+  d'inactivité, une clé gardée en mémoire du processus serait perdue à chaque fois.
+- `expires` recule à chaque utilisation ; passé ce délai, la session est effacée (verrouillage).
+
+## 6. Ce que le chiffrement ne protège pas (limites connues)
 
 - Le serveur et toute app qui reçoit le jeton de l'utilisateur voient le **nombre** d'entrées,
   leur taille et leurs dates de dépôt, et peuvent les **supprimer** ou servir une **ancienne**

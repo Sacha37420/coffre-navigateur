@@ -33,21 +33,36 @@ testés ; une extension qui se charge dans les trois navigateurs avec le génér
 **Vérifié le :** 2026-11-18 — `npm test` 21/21 ; essai Chromium (Playwright, Chromium du conteneur)
 sans erreur de console. Firefox et Edge non essayés (pas de navigateur ici).
 
-## Lot 2 — Créer, importer, déverrouiller le coffre (local)   ·   statut : à faire
+## Lot 2 — Créer, importer, déverrouiller le coffre (local)   ·   statut : livré
 **Objectif :** l'utilisateur crée son coffre, enregistre son fichier de clé sur USB, l'importe
 dans un autre navigateur, déverrouille et verrouille — sans serveur.
 **Tâches :**
-- [ ] Page d'accueil (onglet de l'extension) : « Créer un coffre » / « J'ai déjà un fichier de clé »
-- [ ] Création : phrase de passe (deux fois, indicateur de solidité), téléchargement du
-  `.coffre-cle`, confirmation obligatoire « j'ai deux copies sur clé USB » avant de continuer
-- [ ] Import : choix du fichier, phrase de passe, contrôle du format
-- [ ] Le navigateur garde le fichier de clé (chiffré) ; la clé déverrouillée ne vit qu'en mémoire
-  de session (`storage.session`), verrouillage automatique après inactivité (réglable, 15 min)
-- [ ] Changer de phrase de passe (nouveau fichier à recopier sur les clés USB)
-- [ ] Guide intégré, pas à pas : enregistrer sur USB, ajouter un navigateur, clé perdue
+- [x] Page de gestion (`pages/coffre.html`, page d'options) : « Créer mon coffre » / « J'ai déjà un fichier de clé »
+- [x] Création en trois étapes : phrase de passe (deux fois, indicateur de solidité, phrase faible
+  refusée) ; enregistrement (« Enregistrer sur la clé USB… » par sélecteur de fichier sous
+  Chrome/Edge, téléchargement sinon, consignes pour sortir le fichier de « Téléchargements ») ;
+  vérification obligatoire d'une copie relue depuis la clé USB + deux cases à cocher. Rien n'est
+  installé avant « Terminer »
+- [x] Import : choix du fichier, phrase de passe, contrôle du format ; mauvaise phrase ⇒ rien d'installé
+- [x] Fichier de clé (chiffré) en `storage.local` ; clé déverrouillée en `storage.session` seulement
+  (docs/FORMAT.md §5) ; verrouillage après inactivité (1 min à 4 h, 15 min par défaut), échéance
+  repoussée à chaque usage, alarme qui efface la clé même popup fermée
+- [x] Changer de phrase de passe (nouveau fichier téléchargé), refaire une copie, retirer le coffre du navigateur
+- [x] Popup : état du coffre (configurer / déverrouiller / verrouiller) au-dessus du générateur
+- [x] Guide intégré (`pages/guide.html`) : principe, création, clé USB pas à pas, autre
+  navigateur, quotidien, changement de phrase, pertes, interdits
+- [x] Permissions ajoutées : `storage` (fichier de clé, réglages, session), `alarms` (verrouillage
+  automatique même popup fermée). Processus de fond : seulement le verrouillage
 **Tests à passer avant de clore le lot :**
-- [ ] Tests unitaires de l'état du coffre (verrouillé/déverrouillé, expiration)
-- [ ] Essai Chromium : créer, télécharger, réimporter dans un second profil, déverrouiller
+- [x] `npm test` : 35 tests (dont 14 sur l'état du coffre : installation, mauvaise phrase,
+  expiration glissante, alarme, autre coffre, changement de phrase, retrait ; solidité de la phrase)
+- [x] `npm run essai` : 25 contrôles dans Chromium — création complète avec téléchargement réel et
+  vérification de copie, contenu exact de `storage.local`/`storage.session`, phrase écrite nulle
+  part, alarme planifiée, popup verrouiller/déverrouiller, mauvaise phrase, verrouillage à
+  échéance, import dans un second profil, retrait ; aucune erreur de console
+**Vérifié le :** 2026-11-18 — `npm test` 35/35 ; `npm run essai` 25/25 (Chromium du conteneur,
+Playwright). Non essayés : Firefox et Edge, et le bouton « Enregistrer sur la clé USB… » (sélecteur
+natif, non pilotable en essai automatique) — à vérifier à la main au lot 6.
 
 ## Lot 3 — Connexion au lab et synchronisation par `storage`   ·   statut : à faire
 **Objectif :** les entrées chiffrées sont déposées dans `coffre/v1/` de l'espace personnel et

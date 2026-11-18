@@ -9,9 +9,14 @@ const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
 base.version = pkg.version;
 
 const variants = {
-  chrome: (m) => ({ ...m, minimum_chrome_version: '116' }),
+  chrome: (m) => ({
+    ...m,
+    minimum_chrome_version: '116',
+    background: { service_worker: 'background.js', type: 'module' },
+  }),
   firefox: (m) => ({
     ...m,
+    background: { scripts: ['background.js'], type: 'module' },
     browser_specific_settings: { gecko: { id: 'coffre-navigateur@lab.local', strict_min_version: '128.0' } },
   }),
 };

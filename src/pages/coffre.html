@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Coffre du lab</title>
+  <link rel="stylesheet" href="pages.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Coffre du lab</h1>
+    <a href="guide.html" target="_blank">Mode d'emploi détaillé</a>
+  </header>
+
+  <div id="error" class="alert danger" role="alert" hidden></div>
+
+  <!-- ===== Aucun coffre ===== -->
+  <section id="view-aucun" hidden>
+    <p>Ce navigateur n'a pas encore de coffre. Choisissez :</p>
+    <div class="card">
+      <h2>Je n'ai pas encore de coffre</h2>
+      <p>À faire une seule fois. Vous allez choisir une phrase de passe, puis enregistrer un fichier de
+        clé sur une clé USB.</p>
+      <button class="primary" id="go-create" type="button">Créer mon coffre</button>
+    </div>
+    <div class="card">
+      <h2>J'ai déjà un fichier de clé</h2>
+      <p>Vous avez créé votre coffre sur un autre navigateur ou un autre appareil : branchez la clé USB
+        qui porte votre fichier <code>.coffre-cle</code>.</p>
+      <button id="go-import" type="button">Utiliser mon fichier de clé</button>
+    </div>
+  </section>
+
+  <!-- ===== Création, étape 1 : phrase de passe ===== -->
+  <section id="view-create-1" hidden>
+    <h2>Créer mon coffre — étape 1 sur 3 : la phrase de passe</h2>
+    <div class="alert warn">
+      <p><strong>Cette phrase protège votre fichier de clé.</strong> Personne ne peut la retrouver pour
+        vous, pas même l'administrateur du lab. Une phrase de cinq mots ou plus, que vous seul
+        connaissez, est le meilleur choix (par exemple quatre ou cinq mots sans rapport entre eux).</p>
+    </div>
+    <label class="field"><span>Phrase de passe (12 caractères au moins)</span>
+      <input type="password" id="c-pass1" autocomplete="new-password"></label>
+    <p class="strength" id="c-strength" aria-live="polite"></p>
+    <label class="field"><span>Retapez-la</span>
+      <input type="password" id="c-pass2" autocomplete="new-password"></label>
+    <div class="actions">
+      <button class="primary" id="c-next1" type="button">Créer la clé</button>
+      <button id="c-cancel1" type="button">Annuler</button>
+    </div>
+    <p class="muted" id="c-busy1" hidden>Création de la clé… (quelques secondes)</p>
+  </section>
+
+  <!-- ===== Création, étape 2 : enregistrer sur USB ===== -->
+  <section id="view-create-2" hidden>
+    <h2>Créer mon coffre — étape 2 sur 3 : enregistrer le fichier de clé sur une clé USB</h2>
+    <ol>
+      <li>Branchez une clé USB sur cet ordinateur.</li>
+      <li>Cliquez sur le bouton ci-dessous et <strong>choisissez la clé USB</strong> comme emplacement.
+        <br><span class="muted">Si votre navigateur enregistre le fichier directement dans
+          « Téléchargements » sans rien demander : ouvrez ce dossier, <strong>déplacez</strong> (et non
+          copiez) le fichier <code id="c-filename"></code> vers la clé USB, puis videz la corbeille.</span></li>
+      <li>Recommencez avec une <strong>seconde</strong> clé USB, que vous rangerez dans un autre endroit.</li>
+    </ol>
+    <div class="actions">
+      <button class="primary" id="c-save-picker" type="button" hidden>Enregistrer sur la clé USB…</button>
+      <button id="c-save-download" type="button">Télécharger le fichier de clé</button>
+    </div>
+    <div class="alert warn">
+      <p><strong>N'envoyez jamais ce fichier par Internet</strong> : ni par email, ni par messagerie, ni
+        dans un service en ligne (Drive, Dropbox, OneDrive, iCloud…). Avec ce fichier et votre phrase de
+        passe, n'importe qui lit tous vos mots de passe. La seule voie prévue est la clé USB.</p>
+    </div>
+    <div class="actions"><button id="c-next2" class="primary" type="button">J'ai enregistré le fichier, continuer</button></div>
+  </section>
+
+  <!-- ===== Création, étape 3 : vérifier ===== -->
+  <section id="view-create-3" hidden>
+    <h2>Créer mon coffre — étape 3 sur 3 : vérifier votre copie</h2>
+    <p>Pour être sûr que la copie est bonne, ouvrez le fichier <strong>depuis la clé USB</strong>
+      (pas depuis « Téléchargements ») :</p>
+    <label class="field"><span>Fichier de clé sur la clé USB</span>
+      <input type="file" id="c-verify-file" accept=".coffre-cle,application/json"></label>
+    <p id="c-verify-result" aria-live="polite"></p>
+    <label class="check"><input type="checkbox" id="c-second">
+      <span>J'ai fait une <strong>seconde copie</strong> sur une autre clé USB, rangée ailleurs.</span></label>
+    <label class="check"><input type="checkbox" id="c-understand">
+      <span>J'ai compris que si je perds <strong>toutes</strong> mes copies du fichier de clé, ou ma phrase
+        de passe, mes mots de passe sont perdus pour toujours.</span></label>
+    <div class="actions">
+      <button class="primary" id="c-finish" type="button" disabled>Terminer</button>
+      <button id="c-back3" type="button">Revenir à l'enregistrement</button>
+    </div>
+  </section>
+
+  <!-- ===== Import ===== -->
+  <section id="view-import" hidden>
+    <h2>Utiliser mon fichier de clé</h2>
+    <ol>
+      <li>Branchez la clé USB qui porte votre fichier <code>.coffre-cle</code>.</li>
+      <li>Choisissez ce fichier ci-dessous, <strong>directement sur la clé USB</strong>.</li>
+      <li>Saisissez votre phrase de passe.</li>
+    </ol>
+    <label class="field"><span>Fichier de clé</span>
+      <input type="file" id="i-file" accept=".coffre-cle,application/json"></label>
+    <label class="field"><span>Phrase de passe</span>
+      <input type="password" id="i-pass" autocomplete="current-password"></label>
+    <div class="actions">
+      <button class="primary" id="i-go" type="button">Ouvrir le coffre</button>
+      <button id="i-cancel" type="button">Annuler</button>
+    </div>
+    <p class="muted" id="i-busy" hidden>Ouverture… (quelques secondes)</p>
+    <p class="muted">Le navigateur garde ensuite une copie <strong>chiffrée</strong> du fichier : vous
+      pouvez retirer la clé USB. Vous n'aurez plus besoin que de votre phrase de passe ici.</p>
+  </section>
+
+  <!-- ===== Verrouillé ===== -->
+  <section id="view-verrouille" hidden>
+    <h2>Coffre verrouillé</h2>
+    <label class="field"><span>Phrase de passe</span>
+      <input type="password" id="u-pass" autocomplete="current-password"></label>
+    <div class="actions"><button class="primary" id="u-go" type="button">Déverrouiller</button></div>
+    <p class="muted" id="u-busy" hidden>Déverrouillage…</p>
+    <details>
+      <summary>Utiliser un autre fichier de clé</summary>
+      <p>Retire le coffre actuel de ce navigateur pour en charger un autre. Vos fichiers sur clé USB
+        ne sont pas touchés.</p>
+      <button class="danger" id="u-forget" type="button">Retirer ce coffre de ce navigateur</button>
+    </details>
+  </section>
+
+  <!-- ===== Déverrouillé ===== -->
+  <section id="view-deverrouille" hidden>
+    <div class="card">
+      <h2>Coffre ouvert</h2>
+      <p id="d-status" class="muted"></p>
+      <div class="actions"><button id="d-lock" class="primary" type="button">Verrouiller maintenant</button></div>
+    </div>
+
+    <div class="card">
+      <h3>Verrouillage automatique</h3>
+      <label class="field"><span>Verrouiller après une inactivité de</span>
+        <select id="d-autolock"></select></label>
+    </div>
+
+    <div class="card">
+      <h3>Refaire une copie du fichier de clé</h3>
+      <p>Pour remplacer une clé USB perdue ou abîmée. Même consignes : sur une clé USB, jamais par Internet.</p>
+      <div class="actions">
+        <button id="d-save-picker" type="button" hidden>Enregistrer sur la clé USB…</button>
+        <button id="d-save-download" type="button">Télécharger le fichier de clé</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Changer de phrase de passe</h3>
+      <div class="alert warn">
+        <p>Cela produit un <strong>nouveau fichier de clé</strong>. Remplacez-le sur <strong>toutes</strong>
+          vos clés USB et dans vos autres navigateurs, puis effacez les anciens fichiers : un ancien
+          fichier s'ouvre toujours avec l'ancienne phrase.</p>
+      </div>
+      <label class="field"><span>Phrase actuelle</span><input type="password" id="p-old" autocomplete="current-password"></label>
+      <label class="field"><span>Nouvelle phrase</span><input type="password" id="p-new1" autocomplete="new-password"></label>
+      <p class="strength" id="p-strength" aria-live="polite"></p>
+      <label class="field"><span>Retapez la nouvelle phrase</span><input type="password" id="p-new2" autocomplete="new-password"></label>
+      <div class="actions"><button id="p-go" type="button">Changer la phrase de passe</button></div>
+      <p id="p-result" aria-live="polite"></p>
+    </div>
+
+    <div class="card">
+      <h3>Retirer le coffre de ce navigateur</h3>
+      <p>Utile avant de rendre ou de prêter cet ordinateur. Vos fichiers sur clé USB ne sont pas touchés :
+        vous pourrez le recharger.</p>
+      <button class="danger" id="d-forget" type="button">Retirer ce coffre de ce navigateur</button>
+    </div>
+  </section>
+</main>
+<script type="module" src="coffre.js"></script>
+</body>
+</html>

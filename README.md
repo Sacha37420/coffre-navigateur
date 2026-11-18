@@ -11,6 +11,7 @@ Gestionnaire de mots de passe pour Chrome, Edge et Firefox, branché sur le lab 
 > mots de passe, sans recours possible. Gardez **deux** copies sur **deux** clés USB.
 > N'envoyez jamais ce fichier par email, messagerie ou service en ligne.
 
+Mode d'emploi pour l'utilisateur : `src/pages/guide.html` (aussi ouvert depuis l'extension).
 État d'avancement : `FEUILLE_DE_ROUTE.md`. Format des fichiers : `docs/FORMAT.md`.
 
 ## Développer
@@ -18,7 +19,7 @@ Gestionnaire de mots de passe pour Chrome, Edge et Firefox, branché sur le lab 
 ```bash
 npm test                          # tests unitaires (Node ≥ 20, aucune dépendance)
 npm run build                     # dist/chrome (Chrome et Edge) et dist/firefox
-node scripts/essai-chromium.cjs   # charge dist/chrome dans Chromium (Playwright)
+npm run essai                     # parcours complet dans Chromium (Playwright)
 ```
 
 Charger l'extension non empaquetée pour l'essayer :

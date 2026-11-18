@@ -7,13 +7,35 @@
 </head>
 <body>
   <main>
-    <h1>Générer un mot de passe</h1>
+    <section id="vault">
+      <div id="v-aucun" hidden>
+        <p>Aucun coffre dans ce navigateur.</p>
+        <button class="primary" id="v-setup" type="button">Configurer le coffre</button>
+      </div>
+      <div id="v-verrouille" hidden>
+        <label class="row"><input type="password" id="v-pass" placeholder="Phrase de passe" autocomplete="current-password" aria-label="Phrase de passe"></label>
+        <div class="row">
+          <button class="primary" id="v-unlock" type="button">Déverrouiller</button>
+          <button id="v-manage1" type="button">Gérer</button>
+        </div>
+        <p id="v-error" class="alert danger" role="alert" hidden></p>
+      </div>
+      <div id="v-deverrouille" hidden>
+        <p class="alert ok">Coffre ouvert.</p>
+        <div class="row">
+          <button class="primary" id="v-lock" type="button">Verrouiller</button>
+          <button id="v-manage2" type="button">Gérer le coffre</button>
+        </div>
+      </div>
+    </section>
+
+    <h2>Générer un mot de passe</h2>
     <div class="row">
       <output id="pwd" aria-live="polite"></output>
     </div>
     <div class="row">
       <button id="regen" type="button">Nouveau</button>
-      <button id="copy" type="button">Copier</button>
+      <button id="copy" type="button" class="primary">Copier</button>
     </div>
     <label class="row">Longueur <input id="length" type="range" min="8" max="64" value="20"> <span id="length-val">20</span></label>
     <fieldset>
