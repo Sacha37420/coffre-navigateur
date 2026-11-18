@@ -1,0 +1,13 @@
+{
+  "manifest_version": 3,
+  "name": "Coffre du lab",
+  "short_name": "Coffre",
+  "version": "0.1.0",
+  "description": "Mots de passe chiffrés dans votre navigateur ; clé gardée sur votre clé USB.",
+  "default_locale": "fr",
+  "action": { "default_popup": "popup/popup.html", "default_title": "Coffre du lab" },
+  "permissions": [],
+  "content_security_policy": {
+    "extension_pages": "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'"
+  }
+}

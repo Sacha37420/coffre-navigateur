@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <title>Coffre du lab</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <h1>Générer un mot de passe</h1>
+    <div class="row">
+      <output id="pwd" aria-live="polite"></output>
+    </div>
+    <div class="row">
+      <button id="regen" type="button">Nouveau</button>
+      <button id="copy" type="button">Copier</button>
+    </div>
+    <label class="row">Longueur <input id="length" type="range" min="8" max="64" value="20"> <span id="length-val">20</span></label>
+    <fieldset>
+      <legend>Caractères</legend>
+      <label><input type="checkbox" id="lower" checked> minuscules</label>
+      <label><input type="checkbox" id="upper" checked> majuscules</label>
+      <label><input type="checkbox" id="digits" checked> chiffres</label>
+      <label><input type="checkbox" id="symbols" checked> symboles</label>
+      <label><input type="checkbox" id="avoidAmbiguous" checked> sans caractères ambigus (l, 1, O, 0…)</label>
+    </fieldset>
+    <p id="info" class="muted"></p>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
