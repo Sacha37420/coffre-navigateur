@@ -20,7 +20,7 @@ const enc = new TextEncoder();
 const dec = new TextDecoder('utf-8', { fatal: true });
 
 export class CoffreError extends Error {
-  /** @param {'format'|'phrase_courte'|'phrase_ou_fichier'|'autre_cle'|'entree_alteree'|'aucun_coffre'|'autre_coffre_installe'|'reglage'} code */
+  /** @param {'format'|'phrase_courte'|'phrase_ou_fichier'|'autre_cle'|'entree_alteree'|'aucun_coffre'|'autre_coffre_installe'|'reglage'|'connexion'|'connexion_requise'|'acces_refuse'|'reseau'|'session'|'serveur'} code */
   constructor(code, message) {
     super(message);
     this.name = 'CoffreError';

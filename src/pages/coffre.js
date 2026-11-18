@@ -1,5 +1,6 @@
 import { CoffreError, createVault, MIN_PASSPHRASE, parseKeyFile } from '../lib/crypto.js';
-import { extensionVault, keyFileName } from '../lib/extension.js';
+import { api, ask, extensionVault, keyFileName } from '../lib/extension.js';
+import { labEndpoints, normalizeLabUrl } from '../lib/lab-config.js';
 import { passphraseStrength } from '../lib/strength.js';
 import { AUTO_LOCK_CHOICES, sameKeyFile } from '../lib/vault-state.js';
 
@@ -16,8 +17,9 @@ function show(view) {
 }
 
 function fail(e) {
-  // Messages fixes seulement : ceux de CoffreError sont écrits pour l'utilisateur, le reste non.
-  $('error').textContent = e instanceof CoffreError ? e.message : 'Une erreur inattendue est survenue.';
+  // Messages fixes seulement : ceux de CoffreError (et ceux relayés du processus de fond, qui en
+  // viennent) sont écrits pour l'utilisateur, le reste non.
+  $('error').textContent = e instanceof CoffreError || e?.userMessage ? e.message : 'Une erreur inattendue est survenue.';
   $('error').hidden = false;
 }
 
@@ -87,7 +89,58 @@ async function refresh() {
     $('d-autolock').value = String(autoLockMinutes);
   }
   show(st.state);
+  if (st.state === 'deverrouille') await refreshLab();
 }
+
+// ---------- Connexion au lab ----------
+function syncLine(s) {
+  if (!s) return '';
+  const at = new Date(s.at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  if (!s.ok) return `Dernière synchronisation (${at}) en échec : ${s.message}`;
+  const r = s.report;
+  return `Dernière synchronisation : ${at} — ${r.received} reçue(s), ${r.sent} envoyée(s)`
+    + (r.restored ? `, ${r.restored} redéposée(s)` : '') + (r.ignored ? `, ${r.ignored} illisible(s) ignorée(s)` : '') + '.';
+}
+
+async function refreshLab() {
+  const e = await ask('etat');
+  if (document.activeElement !== $('l-url')) $('l-url').value = e.lab?.origin ?? '';
+  $('l-redirect').textContent = e.redirectUrl;
+  const hasLab = !!e.lab?.origin;
+  const online = hasLab && e.connected && !!e.lab.username;
+  $('l-state').textContent = !hasLab ? 'Aucune adresse enregistrée.'
+    : online ? `Connecté : espace « ${e.lab.username} ».`
+      : e.lab.username ? 'Session expirée : reconnectez-vous.' : 'Non connecté.';
+  $('l-login').hidden = !hasLab || online;
+  $('l-sync').hidden = !online;
+  $('l-logout').hidden = !online;
+  $('l-sync-state').textContent = syncLine(e.synchro);
+}
+
+$('l-save').addEventListener('click', async () => {
+  try {
+    // L'autorisation doit être demandée tout de suite dans le clic (Firefox), avant toute attente.
+    const origin = normalizeLabUrl($('l-url').value);
+    const granted = await api.permissions.request({ origins: [labEndpoints({ origin }).permission] });
+    if (!granted) throw new CoffreError('reglage', 'Sans cette autorisation, l\'extension ne peut pas joindre le lab.');
+    await ask('definir_lab', { url: origin });
+    await refreshLab();
+  } catch (e) { fail(e); }
+});
+$('l-login').addEventListener('click', async () => {
+  $('l-state').textContent = 'Connexion… (une fenêtre du lab peut s\'ouvrir)';
+  try { await ask('connexion'); } catch (e) { fail(e); }
+  await refreshLab();
+});
+$('l-sync').addEventListener('click', async () => {
+  $('l-sync-state').textContent = 'Synchronisation…';
+  try { await ask('synchroniser'); } catch (e) { fail(e); }
+  await refreshLab();
+});
+$('l-logout').addEventListener('click', async () => {
+  try { await ask('deconnexion'); } catch (e) { fail(e); }
+  await refreshLab();
+});
 
 // ---------- Aucun coffre ----------
 $('go-create').addEventListener('click', () => show('create-1'));
@@ -171,6 +224,7 @@ $('u-pass').addEventListener('keydown', (e) => { if (e.key === 'Enter') unlock()
 async function forget() {
   if (!confirm('Retirer le coffre de ce navigateur ? Vos fichiers sur clé USB ne sont pas touchés.')) return;
   await vault.forget();
+  await ask('oublier_entrees'); // les enveloppes de ce coffre n'ont plus rien à faire ici
   await refresh();
 }
 $('u-forget').addEventListener('click', () => forget().catch(fail));
@@ -205,7 +259,6 @@ $('p-go').addEventListener('click', async () => {
 });
 
 // Un autre onglet (ou l'alarme) peut changer l'état : on suit.
-const api = globalThis.browser ?? globalThis.chrome;
 api.storage.onChanged.addListener((_c, areaName) => {
   if (!$('view-deverrouille').hidden || !$('view-verrouille').hidden) {
     if (areaName === 'session' || areaName === 'local') refresh();

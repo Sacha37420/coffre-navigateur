@@ -64,18 +64,46 @@ dans un autre navigateur, déverrouille et verrouille — sans serveur.
 Playwright). Non essayés : Firefox et Edge, et le bouton « Enregistrer sur la clé USB… » (sélecteur
 natif, non pilotable en essai automatique) — à vérifier à la main au lot 6.
 
-## Lot 3 — Connexion au lab et synchronisation par `storage`   ·   statut : à faire
+## Lot 3 — Connexion au lab et synchronisation par `storage`   ·   statut : en cours
 **Objectif :** les entrées chiffrées sont déposées dans `coffre/v1/` de l'espace personnel et
 récupérées sur un autre navigateur.
+**Décision du propriétaire (2026-11-18) :** installation en mode développeur ; identifiant
+Chrome/Edge fixé par la clé publique du manifeste (`kainmmlggnfinglcapceocelpngjhnol`), Firefox par
+son id (`coffre-navigateur@lab.local`). Les identifiants des boutiques s'ajouteront au client plus tard.
+**Reste :** l'essai réel contre le lab, par le propriétaire, après les réglages serveur du README.
 **Tâches :**
-- [ ] Connexion Keycloak : `identity.launchWebAuthFlow`, PKCE S256, jeton gardé en mémoire de session
-- [ ] Client `storage` : `/api/me/`, liste, dépôt, lecture, suppression (Bearer seulement)
-- [ ] Descripteur `coffre.json` : refus de synchroniser avec une autre clé
-- [ ] Fusion par entrée (`updated` le plus récent), pierres tombales, cache local chiffré
-- [ ] Réglages serveur à appliquer par le propriétaire (commandes exactes dans le README)
+- [x] Adresse du lab saisie par l'utilisateur (https seulement ; http admis pour la seule boucle
+  locale, pour les essais) ; accès à cette seule origine demandé à ce moment
+  (`optional_host_permissions`), jamais `<all_urls>` d'office
+- [x] Connexion Keycloak par le processus de fond : `identity.launchWebAuthFlow`, code + PKCE S256,
+  `state` vérifié ; jetons en `storage.session` seulement ; rafraîchissement, puis reconnexion
+  silencieuse (`prompt=none`), puis demande à l'utilisateur ; déconnexion avec révocation
+- [x] Client `storage` : `/api/me/` (nom de l'espace), liste, dépôt, lecture, suppression ; Bearer seulement ;
+  erreurs à message fixe
+- [x] Descripteur `coffre.json` : créé par le premier navigateur, refus de synchroniser avec une autre clé
+- [x] Synchronisation : fusion par entrée (`updated` le plus récent), pierres tombales, cache local
+  d'enveloppes ; une entrée disparue du serveur sans pierre tombale est **redéposée** (protection
+  contre une suppression par une autre app) ; une enveloppe illisible est ignorée, jamais supprimée ;
+  une enveloppe d'un autre coffre restée en cache n'est jamais envoyée ; un seul passage à la fois
+  (`navigator.locks`)
+- [x] Synchronisation au déverrouillage, à la demande et toutes les 10 min ; elle ne repousse
+  **pas** le verrouillage automatique (`peekKey`)
+- [x] Carte « Connexion au lab » dans la page de gestion ; adresse de retour affichée pour l'administrateur
+- [x] Permissions ajoutées : `identity` (connexion Keycloak), `optional_host_permissions` (origine du
+  lab, demandée au moment où l'utilisateur l'enregistre). CSP : `connect-src 'self' https:` + boucle
+  locale (sans quoi aucun appel au lab ne part — constaté par l'essai)
+- [x] Processus de fond : ne répond qu'aux pages de l'extension (`sender.id` et `sender.url` vérifiés)
+- [x] Réglages serveur à appliquer par le propriétaire (commandes exactes dans le README)
 **Tests à passer avant de clore le lot :**
-- [ ] Tests unitaires de la fusion (conflits, suppressions, hors ligne) avec un faux `storage`
-- [ ] Essai réel contre le lab : deux profils, une entrée créée d'un côté apparaît de l'autre
+- [x] Tests unitaires : PKCE, URL d'autorisation, retour (`state`, erreur), adresse du lab, client
+  `storage` (faux `fetch`), jetons (cache, rafraîchissement, silencieux), fusion (conflits, pierres
+  tombales, entrée disparue, autre clé, enveloppe altérée ou déplacée, retour arrière, panne en cours d'envoi)
+- [x] Essai Chromium contre un faux Keycloak + faux `storage` local (`scripts/faux-lab.cjs`) :
+  connexion réelle par `launchWebAuthFlow`, deux profils, une entrée déposée par l'un apparaît chez
+  l'autre, et l'inverse
+- [ ] Essai réel contre le lab (par le propriétaire, après les réglages serveur)
+**Vérifié le :** 2026-11-18 — `npm test` 59/59 ; `npm run essai` : création 25/25, synchronisation
+16/16 (Chromium du conteneur, faux lab). Non essayés : Firefox, Edge, le vrai lab.
 
 ## Lot 4 — Gérer les entrées   ·   statut : à faire
 **Objectif :** ajouter, modifier, supprimer, rechercher, afficher et copier un mot de passe.

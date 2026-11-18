@@ -102,6 +102,18 @@ export function createVaultState({ local, session, now = () => Date.now(), sched
       }
     },
 
+    /** Clé utilisable sans repousser le verrouillage (synchronisation de fond). */
+    async peekKey() {
+      const s = await readSession();
+      if (!s) return null;
+      const raw = fromB64u(s.raw);
+      try {
+        return { keyId: s.key_id, key: await importVaultKey(raw) };
+      } finally {
+        raw.fill(0);
+      }
+    },
+
     /** À l'échéance planifiée : verrouille si le délai est passé, sinon replanifie. */
     async expireIfDue() {
       const s = await session.get(S_KEY);

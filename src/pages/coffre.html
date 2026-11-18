@@ -138,6 +138,28 @@
       <div class="actions"><button id="d-lock" class="primary" type="button">Verrouiller maintenant</button></div>
     </div>
 
+    <div class="card" id="lab-card">
+      <h3>Connexion au lab</h3>
+      <p class="muted">Vos mots de passe sont déposés <strong>chiffrés</strong> dans votre espace personnel
+        du stockage du lab, pour les retrouver sur vos autres navigateurs. Le fichier de clé, lui, ne
+        passe jamais par le lab.</p>
+      <label class="field"><span>Adresse du lab</span>
+        <input type="text" id="l-url" placeholder="https://mon-domaine.fr" inputmode="url" autocomplete="off" spellcheck="false"></label>
+      <div class="actions"><button id="l-save" type="button">Enregistrer l'adresse</button></div>
+      <p id="l-state" aria-live="polite"></p>
+      <div class="actions">
+        <button class="primary" id="l-login" type="button" hidden>Se connecter</button>
+        <button id="l-sync" type="button" hidden>Synchroniser maintenant</button>
+        <button id="l-logout" type="button" hidden>Se déconnecter</button>
+      </div>
+      <p id="l-sync-state" class="muted" aria-live="polite"></p>
+      <details>
+        <summary>Informations pour l'administrateur du lab</summary>
+        <p>Client Keycloak : <code>coffre-navigateur</code> (public, PKCE). Adresse de retour de ce navigateur :</p>
+        <p><code id="l-redirect"></code></p>
+      </details>
+    </div>
+
     <div class="card">
       <h3>Verrouillage automatique</h3>
       <label class="field"><span>Verrouiller après une inactivité de</span>

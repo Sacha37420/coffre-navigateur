@@ -30,7 +30,11 @@ Même discipline que le lab : écrire le lot dans `FEUILLE_DE_ROUTE.md` avant de
 
 - Manifest V3, code commun aux trois navigateurs ; les écarts vivent dans `scripts/build.mjs`.
 - CSP stricte (`script-src 'self'`), aucun script distant, aucun `eval`, aucune police ou image
-  chargée d'Internet.
+  chargée d'Internet. `connect-src` n'est ouvert qu'au https (adresse du lab choisie par
+  l'utilisateur) et à la boucle locale (essais) ; l'accès réel reste borné par l'autorisation
+  d'origine demandée pour le seul lab.
+- Le processus de fond ne répond qu'aux pages de l'extension (`sender.id` et `sender.url`) : un
+  script de contenu ne doit jamais pouvoir demander une synchronisation, une connexion ou une clé.
 - Permissions au plus juste : chaque permission ajoutée est justifiée dans la feuille de route.
 - Préremplissage seulement sur **origine exacte** et à la demande de l'utilisateur.
 - Interface : tokens CSS (aucune couleur en dur hors des `:root`), cibles de 44 px minimum.
@@ -43,5 +47,7 @@ Même discipline que le lab : écrire le lot dans `FEUILLE_DE_ROUTE.md` avant de
 
 ## Tests
 
-`npm test` (Node, sans dépendance) et `node scripts/essai-chromium.cjs` après `npm run build`.
-Aucun test n'appelle le vrai lab ; `storage` et Keycloak sont simulés.
+`npm test` (Node, sans dépendance) et `npm run essai` (Chromium : création, puis synchronisation
+contre `scripts/faux-lab.cjs`). Aucun test n'appelle le vrai lab ; `storage` et Keycloak sont
+simulés. `dist/essai` (construit par `--essai`) n'est **jamais** distribué : il a l'accès à la
+boucle locale accordé d'office.

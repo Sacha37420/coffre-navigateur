@@ -28,8 +28,47 @@ Charger l'extension non empaquetée pour l'essayer :
 - **Firefox** : `about:debugging#/runtime/this-firefox` → « Charger un module temporaire » →
   `dist/firefox/manifest.json`.
 
-## Réglages côté lab (à faire une fois, par l'administrateur)
+## Réglages côté lab (une fois, par l'administrateur, depuis la racine du lab)
 
-À partir du lot 3. Les commandes exactes (client Keycloak de l'extension, ajout à
-`KEYCLOAK_TRUSTED_CLIENTS` de `storage`) seront écrites ici quand l'identifiant définitif de
-l'extension sera connu : c'est lui qui fixe l'adresse de retour de la connexion.
+Aucun nouveau service : un client Keycloak pour l'extension, et son ajout à la liste des clients
+de confiance de `storage`. `storage` n'est pas modifié.
+
+**1. Client Keycloak `coffre-navigateur`** — public, PKCE S256, sans dossier d'app (`--no-env`),
+ouvert à tout compte membre d'**au moins un groupe** (même liste que `oauth-hub`) :
+
+```bash
+bash scripts/create-app-client.sh coffre-navigateur --public --no-env --pkce \
+  --native-redirect 'https://kainmmlggnfinglcapceocelpngjhnol.chromiumapp.org/' \
+  --native-redirect 'https://9b3af4d723281ec8a520114f8d952e5d3743cd4f.extensions.allizom.org/' \
+  $(grep -o -- '--require-group [^ ]*' oauth-hub/.keycloak-client-opts)
+```
+
+- La première adresse est celle de Chrome et d'Edge (identifiant fixé par la clé du manifeste).
+- La seconde est celle que Firefox calcule pour `coffre-navigateur@lab.local` (empreinte SHA-1 de
+  l'identifiant). **À vérifier** au premier essai sous Firefox : l'adresse réelle est affichée dans
+  la page de gestion, « Informations pour l'administrateur du lab ». Si elle diffère, relancer la
+  commande avec la bonne adresse (une URI de retour s'ajoute, elle ne remplace rien).
+- Comme pour `oauth-hub` : un **nouveau groupe LDAP** doit aussi être ajouté à ce client.
+
+**2. Autoriser l'extension à appeler `storage`** — la clé `KEYCLOAK_*` est gérée par le cadriciel,
+`app-env.sh` la refuse : édition directe, puis redémarrage sans reconstruction :
+
+```bash
+grep '^KEYCLOAK_TRUSTED_CLIENTS=' storage/.env
+```
+
+```bash
+grep -q '^KEYCLOAK_TRUSTED_CLIENTS=.*coffre-navigateur' storage/.env \
+  || sed -i '/^KEYCLOAK_TRUSTED_CLIENTS=/ s/$/,coffre-navigateur/' storage/.env
+```
+
+```bash
+bash scripts/app-restart.sh storage
+```
+
+L'utilisateur doit aussi satisfaire `KEYCLOAK_REQUIRED_GROUPS` de `storage/.env` (contrôle inchangé).
+
+**3. Essai** : charger l'extension, créer un coffre, « Gérer le coffre » → « Connexion au lab » :
+adresse `https://<domaine>`, « Enregistrer l'adresse » (le navigateur demande l'autorisation pour
+ce seul site), « Se connecter ». Une entrée créée dans un navigateur doit apparaître dans l'autre
+après « Synchroniser maintenant ».
