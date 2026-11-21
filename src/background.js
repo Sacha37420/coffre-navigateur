@@ -23,7 +23,7 @@ async function client() {
   if (!(await api.permissions.contains({ origins: [ep.permission] }))) {
     throw new CoffreError('reglage', 'L\'extension n\'a pas l\'autorisation de joindre le lab : enregistrez à nouveau son adresse.');
   }
-  return createStorageClient({ base: ep.storage, fetch: (...a) => globalThis.fetch(...a), token: () => auth.token() });
+  return createStorageClient({ base: ep.storage, fetch: (...a) => globalThis.fetch(...a), token: () => auth.token(), renew: () => auth.invalidate() });
 }
 
 /** Un passage de synchronisation ; jamais deux à la fois. N'allonge pas le délai de verrouillage. */

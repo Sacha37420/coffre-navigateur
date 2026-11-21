@@ -70,7 +70,14 @@ récupérées sur un autre navigateur.
 **Décision du propriétaire (2026-11-18) :** installation en mode développeur ; identifiant
 Chrome/Edge fixé par la clé publique du manifeste (`kainmmlggnfinglcapceocelpngjhnol`), Firefox par
 son id (`coffre-navigateur@lab.local`). Les identifiants des boutiques s'ajouteront au client plus tard.
-**Reste :** l'essai réel contre le lab, par le propriétaire, après les réglages serveur du README.
+**Réglages serveur faits le 2026-11-21** (rapport du propriétaire) : client `coffre-navigateur`
+public, PKCE S256, deux URI de retour, mapper `groups`, flow `require-coffre-navigateur` conforme au
+Verrou 1, rôle attribué aux 8 groupes (aucun écart avec `oauth-hub`) ; `coffre-navigateur` ajouté à
+`KEYCLOAK_TRUSTED_CLIENTS` de `storage` ; images identiques avant/après redémarrage. Constats :
+`storage` répond 403 (pas 401) sans jeton ; le script a posé les origines des extensions en
+`webOrigins` (sans effet pour l'extension, qui n'utilise pas CORS).
+**Reste :** l'essai réel de l'extension contre le lab, par le propriétaire (Chrome ou Edge, puis Firefox
+pour confirmer son adresse de retour).
 **Tâches :**
 - [x] Adresse du lab saisie par l'utilisateur (https seulement ; http admis pour la seule boucle
   locale, pour les essais) ; accès à cette seule origine demandé à ce moment
@@ -93,7 +100,9 @@ son id (`coffre-navigateur@lab.local`). Les identifiants des boutiques s'ajouter
   lab, demandée au moment où l'utilisateur l'enregistre). CSP : `connect-src 'self' https:` + boucle
   locale (sans quoi aucun appel au lab ne part — constaté par l'essai)
 - [x] Processus de fond : ne répond qu'aux pages de l'extension (`sender.id` et `sender.url` vérifiés)
-- [x] Réglages serveur à appliquer par le propriétaire (commandes exactes dans le README)
+- [x] Réglages serveur à appliquer par le propriétaire (commandes exactes dans le README) — faits le 2026-11-21
+- [x] Jeton refusé par `storage` (403 comme 401) : renouvellement puis une seule nouvelle tentative
+- [x] Adresse du lab préremplie depuis `config.local.json` (non versionné), intégrée à `dist/` par la construction
 **Tests à passer avant de clore le lot :**
 - [x] Tests unitaires : PKCE, URL d'autorisation, retour (`state`, erreur), adresse du lab, client
   `storage` (faux `fetch`), jetons (cache, rafraîchissement, silencieux), fusion (conflits, pierres
@@ -102,8 +111,9 @@ son id (`coffre-navigateur@lab.local`). Les identifiants des boutiques s'ajouter
   connexion réelle par `launchWebAuthFlow`, deux profils, une entrée déposée par l'un apparaît chez
   l'autre, et l'inverse
 - [ ] Essai réel contre le lab (par le propriétaire, après les réglages serveur)
-**Vérifié le :** 2026-11-18 — `npm test` 59/59 ; `npm run essai` : création 25/25, synchronisation
-16/16 (Chromium du conteneur, faux lab). Non essayés : Firefox, Edge, le vrai lab.
+**Vérifié le :** 2026-11-21 — `npm test` 63/63 ; `npm run essai` : création 25/25, synchronisation
+17/17 (Chromium du conteneur, faux lab qui répond 403 comme le vrai, dont jeton révoqué en cours de
+route) ; construction avec `config.local.json` : champ prérempli. Non essayés : Firefox, Edge, le vrai lab.
 
 ## Lot 4 — Gérer les entrées   ·   statut : à faire
 **Objectif :** ajouter, modifier, supprimer, rechercher, afficher et copier un mot de passe.

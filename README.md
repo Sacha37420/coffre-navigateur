@@ -22,6 +22,11 @@ npm run build                     # dist/chrome (Chrome et Edge) et dist/firefox
 npm run essai                     # parcours complet dans Chromium (Playwright)
 ```
 
+**Adresse du lab préremplie** (facultatif, recommandé pour votre installation) : copier
+`config.local.example.json` en `config.local.json` et y mettre l'adresse du lab. Ce fichier est
+ignoré par git ; `npm run build` l'intègre à `dist/`. L'utilisateur clique encore « Enregistrer
+l'adresse » : c'est ce clic qui demande au navigateur l'autorisation d'accès au site.
+
 Charger l'extension non empaquetée pour l'essayer :
 - **Chrome / Edge** : `chrome://extensions` (ou `edge://extensions`) → « Mode développeur » →
   « Charger l'extension non empaquetée » → `dist/chrome`.
@@ -67,6 +72,10 @@ bash scripts/app-restart.sh storage
 ```
 
 L'utilisateur doit aussi satisfaire `KEYCLOAK_REQUIRED_GROUPS` de `storage/.env` (contrôle inchangé).
+
+> `storage` répond **403**, et non 401, sans jeton ou avec un jeton expiré ou révoqué
+> (`authenticate_header` absent de sa classe d'authentification). L'extension en tient compte : sur
+> 401 comme sur 403, elle renouvelle son jeton une fois avant de conclure à un refus.
 
 **3. Essai** : charger l'extension, créer un coffre, « Gérer le coffre » → « Connexion au lab » :
 adresse `https://<domaine>`, « Enregistrer l'adresse » (le navigateur demande l'autorisation pour

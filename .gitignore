@@ -3,3 +3,4 @@ node_modules/
 *.coffre-cle
 *.zip
 *.xpi
+config.local.json

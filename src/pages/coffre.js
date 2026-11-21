@@ -1,6 +1,7 @@
 import { CoffreError, createVault, MIN_PASSPHRASE, parseKeyFile } from '../lib/crypto.js';
 import { api, ask, extensionVault, keyFileName } from '../lib/extension.js';
 import { labEndpoints, normalizeLabUrl } from '../lib/lab-config.js';
+import DEFAULTS from '../defaults.js';
 import { passphraseStrength } from '../lib/strength.js';
 import { AUTO_LOCK_CHOICES, sameKeyFile } from '../lib/vault-state.js';
 
@@ -104,7 +105,9 @@ function syncLine(s) {
 
 async function refreshLab() {
   const e = await ask('etat');
-  if (document.activeElement !== $('l-url')) $('l-url').value = e.lab?.origin ?? '';
+  // Sans adresse enregistrée : celle de l'installation est proposée, mais rien n'est fait sans le
+  // clic « Enregistrer l'adresse » (c'est lui qui demande l'autorisation d'accès au site).
+  if (document.activeElement !== $('l-url')) $('l-url').value = e.lab?.origin ?? DEFAULTS.labUrl;
   $('l-redirect').textContent = e.redirectUrl;
   const hasLab = !!e.lab?.origin;
   const online = hasLab && e.connected && !!e.lab.username;

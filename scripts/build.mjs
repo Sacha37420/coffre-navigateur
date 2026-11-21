@@ -2,6 +2,7 @@
 import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { defaultsModule } from './defaults.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const base = JSON.parse(readFileSync(join(root, 'src/manifest.base.json'), 'utf8'));
@@ -36,6 +37,8 @@ if (essai) {
   variants.essai = (m) => ({ ...variants.chrome(m), host_permissions: ['http://127.0.0.1/*'] });
 }
 
+const defaults = defaultsModule(join(root, 'config.local.json'));
+
 for (const [name, adapt] of Object.entries(variants)) {
   const out = join(root, 'dist', name);
   rmSync(out, { recursive: true, force: true });
@@ -45,5 +48,6 @@ for (const [name, adapt] of Object.entries(variants)) {
     filter: (p) => !p.endsWith('manifest.base.json'),
   });
   writeFileSync(join(out, 'manifest.json'), JSON.stringify(adapt(base), null, 2) + '\n');
+  writeFileSync(join(out, 'defaults.js'), name === 'essai' ? defaultsModule('') : defaults);
   console.log(`✓ dist/${name}`);
 }

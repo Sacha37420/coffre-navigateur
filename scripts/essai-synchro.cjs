@@ -121,6 +121,12 @@ async function connect(p, lab) {
     await A.page.waitForFunction(() => /1 reçue/.test(document.querySelector('#l-sync-state').textContent), null, { timeout: 20000 });
     check('A : modification faite sur B reçue', (await entries(A.page))[0].password === 'Nouveau-Mot-De-Passe');
 
+    // Jeton d'accès révoqué côté serveur (storage répond alors 403) : renouvellement transparent.
+    lab.revokeAccessTokens();
+    const r403 = await A.page.evaluate(async () => (await import('/lib/extension.js')).ask('synchroniser'));
+    check('jeton refusé (403) : rafraîchi puis synchronisé sans intervention', r403.ok && r403.status?.ok === true,
+      JSON.stringify(r403));
+
     // Verrouillé : la synchronisation de fond ne fait rien et ne déverrouille rien.
     await A.page.evaluate(async () => (await import('/lib/extension.js')).extensionVault().lock());
     const r = await A.page.evaluate(async () => (await import('/lib/extension.js')).ask('synchroniser'));

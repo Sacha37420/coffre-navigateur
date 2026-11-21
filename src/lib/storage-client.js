@@ -6,10 +6,13 @@ function encodePath(p) {
 }
 
 /**
- * @param {{ base: string, fetch: Function, token: () => Promise<string> }} deps
+ * @param {{ base: string, fetch: Function, token: () => Promise<string>, renew?: () => Promise<void> }} deps
+ * `renew` : oublie le jeton d'accès en cache. storage répond 403 (et non 401) à un jeton expiré ou
+ * révoqué : sur 401 comme sur 403, on renouvelle une fois avant de conclure à un refus.
  */
-export function createStorageClient({ base, fetch: fetchFn, token }) {
-  async function call(path, init = {}, { allow404 = false } = {}) {
+export function createStorageClient({ base, fetch: fetchFn, token, renew }) {
+  async function call(path, init = {}, opts = {}, retried = false) {
+    const { allow404 = false } = opts;
     const t = await token();
     let res;
     try {
@@ -23,6 +26,10 @@ export function createStorageClient({ base, fetch: fetchFn, token }) {
       throw new CoffreError('reseau', 'Le lab est injoignable.');
     }
     if (res.status === 404 && allow404) return null;
+    if ((res.status === 401 || res.status === 403) && renew && !retried) {
+      await renew();
+      return call(path, init, opts, true);
+    }
     if (res.status === 401) throw new CoffreError('session', 'Session expirée : reconnectez-vous au lab.');
     if (res.status === 403) throw new CoffreError('acces_refuse', 'Le lab refuse l\'accès au stockage pour ce compte.');
     if (!res.ok) throw new CoffreError('serveur', `Le stockage du lab a répondu une erreur (${res.status}).`);

@@ -72,7 +72,8 @@ function start({ clientId = 'coffre-navigateur', redirectUris, username = 'moi' 
 
     if (url.pathname.startsWith('/storage-api/api/')) {
       const auth = req.headers.authorization || '';
-      if (!auth.startsWith('Bearer ') || !tokens.has(auth.slice(7))) return send(401, { detail: 'non authentifié' });
+      // Comme le vrai storage (constaté le 2026-11-21) : 403, et non 401, sans jeton ou avec un jeton refusé.
+      if (!auth.startsWith('Bearer ') || !tokens.has(auth.slice(7))) return send(403, { detail: 'non authentifié' });
       const rest = url.pathname.slice('/storage-api/api'.length);
       if (rest === '/me/') return send(200, { username, email: `${username}@ex.fr`, groups: ['amis'] });
       const m = /^\/files\/([^/]+)\/(?:content\/(.+))?$/.exec(rest);
@@ -106,7 +107,10 @@ function start({ clientId = 'coffre-navigateur', redirectUris, username = 'moi' 
   });
 
   return new Promise((resolve) => server.listen(0, '127.0.0.1', () => {
-    resolve({ url: `http://127.0.0.1:${server.address().port}`, files, log, close: () => server.close() });
+    resolve({
+      url: `http://127.0.0.1:${server.address().port}`, files, log, close: () => server.close(),
+      revokeAccessTokens: () => tokens.clear(),   // les jetons d'accès émis deviennent invalides
+    });
   }));
 }
 

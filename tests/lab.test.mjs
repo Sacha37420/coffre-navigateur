@@ -212,3 +212,30 @@ test('entrées : origines normalisées, horodatage croissant, pierre tombale vid
   assert.throws(() => editEntry(t, { password: 'x' }), isErr('format'));
   assert.throws(() => newEntry({}), isErr('format'));
 });
+
+test('storage refuse le jeton (403 comme le vrai storage) : renouvellement puis une seule nouvelle tentative', async () => {
+  let accepted = 'NEUF';
+  let renewed = 0;
+  let current = 'VIEUX';
+  const f = fakeFetch((url, init) => (init.headers.Authorization === `Bearer ${accepted}`
+    ? { json: { username: 'moi' } } : { status: 403, json: { detail: 'x' } }));
+  const c = createStorageClient({
+    base: 'b', fetch: f, token: async () => current, renew: async () => { renewed++; current = 'NEUF'; },
+  });
+  assert.equal((await c.me()).username, 'moi');
+  assert.equal(renewed, 1);
+  assert.equal(f.calls.length, 2);
+  accepted = 'JAMAIS';                       // vrai refus : une seule nouvelle tentative, puis l'erreur
+  await assert.rejects(c.me(), isErr('acces_refuse'));
+  assert.equal(renewed, 2);
+  assert.equal(f.calls.length, 4);
+});
+
+test('invalidate : le prochain jeton est rafraîchi, sans fenêtre', async () => {
+  const s = authSetup();
+  await s.auth.setLab('https://lab.fr');
+  await s.auth.login();
+  await s.auth.invalidate();
+  assert.equal(await s.auth.token(), 'AR1');
+  assert.equal(s.launches.length, 1);
+});

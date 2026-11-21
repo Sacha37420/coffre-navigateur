@@ -85,6 +85,12 @@ export function createAuth({ local, session, identity, fetch: fetchFn, now = () 
       return login(false);
     },
 
+    /** Le jeton d'accès en cache est refusé : le prochain token() rafraîchira (le refresh est gardé). */
+    async invalidate() {
+      const t = await session.get(S_TOKENS);
+      if (t) await session.set(S_TOKENS, { ...t, expires: 0 });
+    },
+
     /** Oublie les jetons de l'extension (la session Keycloak du navigateur n'est pas fermée). */
     async logout() {
       const t = await session.get(S_TOKENS);
