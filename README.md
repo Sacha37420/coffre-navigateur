@@ -61,6 +61,9 @@ de l'extension ne change pas : le coffre, la connexion et les réglages sont gar
 
 ### Téléphone
 
+- **Une application Android est en cours** (dossier `android/`) : même coffre, et saisie
+  automatique des mots de passe dans Chrome pour Android, que Chrome accepte d'une application
+  tierce depuis sa version 135. Elle sera téléchargeable ici en APK (lot 12 de la feuille de route).
 - **Chrome pour Android n'accepte aucune extension** : ni par fichier, ni par boutique. Ce n'est
   pas une limite de cette extension, c'est celle de Chrome sur téléphone.
 - **Firefox et Edge pour Android** n'installent que depuis leur boutique (Mozilla, Microsoft). Une

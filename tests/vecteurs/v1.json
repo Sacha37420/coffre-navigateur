@@ -1,0 +1,45 @@
+{
+  "note": "Vecteurs croisés extension ↔ Android. Données d'essai, aucune valeur réelle.",
+  "passphrase": "Été à Noël : clé n°1 ✓ 🔐",
+  "keyFile": {
+    "format": "coffre-navigateur/cle",
+    "version": 1,
+    "key_id": "rIZmD1kBJVF56hFmkIwkEQ",
+    "created": "2026-11-21T20:16:19.749Z",
+    "kdf": {
+      "name": "PBKDF2-SHA256",
+      "iterations": 600000,
+      "salt": "_gimvolK2WDQVCaB9MFniw"
+    },
+    "iv": "dHSHGqjKOvcAMW2a",
+    "wrapped": "P4fsbPpfmCWyxanZEZ2MiLLU9p2b7FXrwcjqSL9OW34Qjz5DSqU9-qW-v4BD1qv8"
+  },
+  "envelope": {
+    "format": "coffre-navigateur/entree",
+    "version": 1,
+    "key_id": "rIZmD1kBJVF56hFmkIwkEQ",
+    "id": "3b241101-e2bb-4255-8caf-4136c566a962",
+    "iv": "iOqp1ywounB1gr_4",
+    "ct": "ZY0tiOuVwlFBtOiAONrz_wuO22k78VX6vJtnG-8sl5n9Gs5Vn37kNpSl-r_Fpbr99Wfe4ROflFmPXg6yHfde--jNeDUhIHr_Fgnwc7Zln5M-nzUhKjbZsJcDSw1hqyXsRzTDVtaZzL8KAt6PrjrWu-YKUyfmrxiY5BuGEKM0v1y5jbKmmZKnBuQJx0NlPNPGs8VHRhbHHg0vnPs5Kr8vM00Hyj90ZV1AeHx7_rQ64h0glYEAVbJyw5bdroDESKlonY6uwjOJAWY9kPQ0ydRqBN_usRZNiY0zoj5veG8bis_9HN4evbFAK9ly33FdXHV74kbdOTjAOw-mP_D68dU6S9BPtqLOPKc5J7B3d6HM1niw_xTHa8TbpbGWwiCDBanDVH4shZ4k0d2yYOTeUG-t2prpAXJ2"
+  },
+  "entry": {
+    "id": "3b241101-e2bb-4255-8caf-4136c566a962",
+    "type": "login",
+    "name": "Banque Épargne",
+    "origins": [
+      "https://banque.fr"
+    ],
+    "username": "client42",
+    "password": "x7!kQ2#pLm9$wR4z — é",
+    "notes": "ligne 1\nligne 2",
+    "created": "2026-11-21T10:00:00.000Z",
+    "updated": "2026-11-21T10:05:00.000Z",
+    "deleted": false
+  },
+  "descriptor": {
+    "format": "coffre-navigateur/coffre",
+    "version": 1,
+    "key_id": "rIZmD1kBJVF56hFmkIwkEQ",
+    "created": "2026-11-21T20:16:19.749Z"
+  }
+}

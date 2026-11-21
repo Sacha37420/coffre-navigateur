@@ -5,3 +5,4 @@ node_modules/
 *.xpi
 config.local.json
 paquets/
+*.apk

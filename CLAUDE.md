@@ -51,3 +51,16 @@ Même discipline que le lab : écrire le lot dans `FEUILLE_DE_ROUTE.md` avant de
 contre `scripts/faux-lab.cjs`). Aucun test n'appelle le vrai lab ; `storage` et Keycloak sont
 simulés. `dist/essai` (construit par `--essai`) n'est **jamais** distribué : il a l'accès à la
 boucle locale accordé d'office.
+
+## Application Android (`android/`)
+
+- `android/core` (Kotlin pur, testé sur la JVM) est la **seule** implémentation du format côté
+  Android : il suit `docs/FORMAT.md` et `src/lib/crypto.js` à l'identique. Toute modification de l'un
+  se fait dans l'autre, et les vecteurs croisés (`tests/vecteurs/v1.json`, `scripts/verifier-vecteur.mjs`)
+  doivent rester verts dans les deux sens.
+- PBKDF2 : assemblé sur `Mac("HmacSHA256")` à partir de l'UTF-8 de la phrase NFC, jamais
+  `SecretKeyFactory` (encodage de la phrase variable selon les versions d'Android).
+- Aucune bibliothèque tierce dans l'APK (plateforme Android, `org.json` intégré, runtime Kotlin) ;
+  aucune permission non justifiée dans la feuille de route ; `allowBackup=false` et règles
+  d'extraction vides : le coffre ne part jamais dans une sauvegarde du téléphone ; `FLAG_SECURE`.
+- Tests : `cd android && ./gradlew :core:test :app:assembleDebug :app:lintDebug`.

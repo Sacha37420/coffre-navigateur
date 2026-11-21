@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Coffre du lab</string>
+    <string name="generator_title">Générer un mot de passe</string>
+    <string name="regen">Nouveau</string>
+    <string name="copy">Copier</string>
+    <string name="length">Longueur</string>
+    <string name="lower">minuscules</string>
+    <string name="upper">majuscules</string>
+    <string name="digits">chiffres</string>
+    <string name="symbols">symboles</string>
+    <string name="ambiguous">sans caractères ambigus (l, 1, O, 0…)</string>
+    <string name="entropy">Environ %1$d bits d\'entropie.</string>
+    <string name="copied">Copié. Le presse-papiers sera vidé dans 30 s si l\'application reste ouverte.</string>
+    <string name="coming">Le coffre (fichier de clé, mots de passe, saisie automatique dans Chrome) arrive dans les prochaines versions.</string>
+</resources>

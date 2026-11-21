@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mêmes jetons que l'extension (src/ui/theme.css). -->
+<resources>
+    <color name="bg">#FBFAF7</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="text">#1D1B18</color>
+    <color name="muted">#6B665E</color>
+    <color name="accent">#B4532A</color>
+    <color name="accent_text">#FFFFFF</color>
+</resources>

@@ -190,3 +190,79 @@ d'enregistrer un nouveau compte.
 - [ ] `docs/GUIDE.md` : installation par navigateur, création, clé USB, nouvel appareil, perte, sauvegarde
 **Tests à passer avant de clore le lot :**
 - [ ] Installation réelle dans Firefox, Chrome et Edge, parcours du guide suivi à la lettre
+
+## Application Android (`android/`)
+
+Décision du propriétaire (2026-11-21) : une application Android complète, parce que Chrome pour
+Android n'accepte aucune extension mais accepte, depuis Chrome 135, un **service de saisie
+automatique** tiers. Même coffre, même format (`docs/FORMAT.md` v1), mêmes entrées dans `storage`.
+Distribution par APK téléchargeable (lien du README), sans boutique. Identifiant d'application
+`io.github.sacha37420.coffre` (définitif dès la première installation). Aucune bibliothèque tierce à
+l'exécution : API de la plateforme seulement (JCA, `org.json`, `AutofillService`).
+
+## Lot 7 — Android : socle, format v1 en Kotlin, APK de démonstration   ·   statut : en cours
+**Objectif :** un module Kotlin pur (`android/core`) qui lit et écrit exactement les fichiers de
+l'extension, prouvé par des vecteurs croisés, et une APK qui s'installe (générateur de mots de passe).
+**Tâches :**
+- [x] Projet Gradle `android/` : module JVM `core` (testable sans téléphone), module `app` (minSdk 26, cible 36)
+- [x] `core` : base64url, fichier de clé (PBKDF2-HMAC-SHA256 600 000 → AES-256-GCM), enveloppes d'entrée,
+  descripteur ; mêmes données associées, mêmes refus, mêmes codes d'erreur que `src/lib/crypto.js`
+- [x] PBKDF2 assemblé sur `Mac("HmacSHA256")` de la plateforme, phrase encodée en UTF-8 (après NFC)
+  explicitement : `SecretKeyFactory` n'a pas le même encodage de la phrase selon les versions
+  d'Android, un accent donnerait une autre clé que l'extension
+- [x] Générateur de mots de passe (mêmes familles, même tirage sans biais)
+- [x] Vecteurs croisés : fichier de clé et enveloppe produits par l'extension (`tests/vecteurs/v1.json`)
+  ouverts par Kotlin ; enveloppe produite par Kotlin ouverte par l'extension
+- [x] APK de démonstration : écran du générateur, thème clair/sombre de la plateforme
+**Tests à passer avant de clore le lot :**
+- [x] `gradle :core:test` : vecteurs RFC 7914 (PBKDF2-HMAC-SHA256), vecteurs de l'extension, refus
+  (mauvaise phrase, fichier altéré, autre clé, id déplacé, itérations abaissées), générateur
+- [x] Vecteur produit par Kotlin vérifié par le code de l'extension (`scripts/verifier-vecteur.mjs`, lancé par le test JVM)
+- [x] `gradle :app:assembleDebug` produit une APK ; `lintDebug` sans erreur
+- [ ] Installation sur un vrai téléphone par le propriétaire (pas d'émulateur ici : pas de KVM)
+**Vérifié le :** 2026-11-21 — `./gradlew :core:test` 10/10 (RFC 7914, PBKDF2 identique au JDK accents
+compris, vecteurs de l'extension ouverts par Kotlin, phrase NFD, enveloppe Kotlin ouverte par l'extension,
+refus, changement de phrase, générateur) ; `:app:assembleDebug` + `:app:lintDebug` : 0 erreur, 4
+avertissements de présentation ; APK : aucune permission, minSdk 26, aucune bibliothèque hors runtime Kotlin.
+SDK Android dans le conteneur depuis l'ajout de `dl.google.com` à l'environnement (accord du propriétaire).
+
+## Lot 8 — Android : coffre local   ·   statut : à faire
+**Objectif :** importer le fichier de clé depuis une clé USB, déverrouiller, verrouiller.
+**Tâches :**
+- [ ] Import du `.coffre-cle` par le sélecteur de fichiers d'Android (clé USB-C ou adaptateur)
+- [ ] Déverrouillage par la phrase ; clé de session protégée par Android Keystore ; verrouillage
+  après inactivité et à la mise en arrière-plan prolongée ; empreinte/visage en option
+- [ ] Écran sécurisé (`FLAG_SECURE` : pas de capture, pas d'aperçu dans les applis récentes)
+**Tests à passer avant de clore le lot :**
+- [ ] Tests JVM de l'état du coffre ; essai sur téléphone par le propriétaire
+
+## Lot 9 — Android : connexion au lab et synchronisation   ·   statut : à faire
+**Objectif :** mêmes entrées que les navigateurs, par `storage`.
+**Tâches :**
+- [ ] Connexion Keycloak dans le navigateur du téléphone, code + PKCE S256, retour par schéma
+  d'application ; **réglage côté lab** : adresse de retour non `http(s)` (adapter
+  `create-app-client.sh` ou l'ajouter à la main), à faire par le propriétaire
+- [ ] Client `storage` et synchronisation : même algorithme que `src/lib/sync.js`, mêmes tests
+**Tests à passer avant de clore le lot :**
+- [ ] Tests JVM contre un faux storage ; essai réel par le propriétaire (téléphone + navigateur)
+
+## Lot 10 — Android : gérer les entrées   ·   statut : à faire
+**Objectif :** liste, recherche, fiche, générateur, affichage avec redemande, copie (presse-papiers
+marqué « sensible », vidé après 30 s).
+**Tests à passer avant de clore le lot :**
+- [ ] Tests JVM du modèle et de la recherche ; essai sur téléphone
+
+## Lot 11 — Android : saisie automatique (Chrome et applications)   ·   statut : à faire
+**Objectif :** `AutofillService` : propositions sur les champs de connexion des sites enregistrés
+(origine exacte du site déclarée par Chrome), après déverrouillage ; proposition d'enregistrer.
+**Tests à passer avant de clore le lot :**
+- [ ] Tests JVM de la correspondance site ↔ entrée ; essai dans Chrome pour Android (« Saisie
+  automatique avec un autre service ») par le propriétaire
+
+## Lot 12 — Android : APK signée publiée et mode d'emploi   ·   statut : à faire
+**Objectif :** l'APK signée part avec chaque Release ; lien dans le README ; installation pas à pas.
+**Tâches :**
+- [ ] Clé de signature dans les secrets GitHub (à garder : la perdre empêche toute mise à jour)
+- [ ] Workflow : construction, tests, signature, publication `coffre-android.apk`
+**Tests à passer avant de clore le lot :**
+- [ ] Installation réelle depuis le lien du README, puis mise à jour par-dessus
