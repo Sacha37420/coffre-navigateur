@@ -1,0 +1,74 @@
+# Publication : sur une étiquette v<majeur>.<mineur>.<correctif>, tests, paquets, signature Firefox
+# (si les secrets Mozilla sont posés), puis Release GitHub aux noms de fichier fixes — ce sont eux
+# que pointent les liens « releases/latest/download/… » du README.
+#
+# Réglages du dépôt (Settings → Secrets and variables → Actions) :
+#   variable LAB_URL         adresse du lab préremplie dans l'extension (https://domaine), facultative
+#   secret   AMO_JWT_ISSUER  clé d'API addons.mozilla.org (« JWT issuer »), facultative
+#   secret   AMO_JWT_SECRET  secret associé ; sans ces deux secrets, Firefox est publié NON signé
+name: publication
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  paquets:
+    runs-on: ubuntu-24.04
+    env:
+      LAB_URL: ${{ vars.LAB_URL }}
+      AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+      AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Version tirée de l'étiquette
+        run: |
+          [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]] || { echo "Étiquette attendue : v1.2.3"; exit 1; }
+          VERSION="${BASH_REMATCH[1]}"
+          node -e "const f='package.json',p=require('./'+f);p.version=process.argv[1];require('fs').writeFileSync(f,JSON.stringify(p,null,2)+'\n')" "$VERSION"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Tests
+        run: npm test
+
+      - name: Construction et paquets
+        run: npm run paquets
+
+      - name: Contrôle Mozilla (web-ext lint)
+        run: npx --yes web-ext@8.3.0 lint --source-dir dist/firefox --self-hosted
+
+      - name: Signature Firefox (non listée)
+        if: env.AMO_JWT_ISSUER != '' && env.AMO_JWT_SECRET != ''
+        run: |
+          npx --yes web-ext@8.3.0 sign --channel=unlisted --source-dir dist/firefox \
+            --artifacts-dir signe --api-key="$AMO_JWT_ISSUER" --api-secret="$AMO_JWT_SECRET" \
+            --approval-timeout 900000
+          mv signe/*.xpi paquets/coffre-firefox.xpi
+          rm paquets/coffre-firefox-non-signe.zip
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "Coffre du lab $VERSION."
+            echo
+            echo "- coffre-chrome-edge.zip : Chrome et Edge, Linux et Windows (mode développeur, voir le README)."
+            if [[ -f paquets/coffre-firefox.xpi ]]; then
+              echo "- coffre-firefox.xpi : Firefox, Linux et Windows, signé par Mozilla (cliquer pour installer)."
+            else
+              echo "- coffre-firefox-non-signe.zip : Firefox, NON signé (secrets Mozilla absents) — module temporaire seulement."
+            fi
+            echo
+            echo "Adresse du lab préremplie : ${LAB_URL:-aucune}."
+          } > notes.md
+          gh release create "$TAG" paquets/* --title "Coffre du lab $VERSION" --notes-file notes.md

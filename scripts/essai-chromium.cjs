@@ -5,7 +5,8 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-const ext = path.resolve(__dirname, '..', 'dist', 'chrome');
+// EXT_DIR : essayer un autre dossier (par exemple le contenu décompressé d'un paquet).
+const ext = process.env.EXT_DIR ? path.resolve(process.env.EXT_DIR) : path.resolve(__dirname, '..', 'dist', 'chrome');
 const PHRASE = 'tortue lampadaire ciboulette orage velours';
 const work = fs.mkdtempSync(path.join(os.tmpdir(), 'coffre-essai-'));
 const checks = [];

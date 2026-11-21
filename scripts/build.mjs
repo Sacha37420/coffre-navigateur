@@ -29,7 +29,15 @@ const variants = {
   firefox: (m) => ({
     ...m,
     background: { scripts: ['background.js'], type: 'module' },
-    browser_specific_settings: { gecko: { id: 'coffre-navigateur@lab.local', strict_min_version: '128.0' } },
+    browser_specific_settings: {
+      gecko: {
+        id: 'coffre-navigateur@lab.local',
+        strict_min_version: '128.0',
+        // Exigé par Mozilla pour signer une extension nouvelle : les identifiants (chiffrés) partent
+        // vers le lab de l'utilisateur, d'où « authenticationInfo », déclaré honnêtement.
+        data_collection_permissions: { required: ['authenticationInfo'] },
+      },
+    },
   }),
 };
 
@@ -37,7 +45,7 @@ if (essai) {
   variants.essai = (m) => ({ ...variants.chrome(m), host_permissions: ['http://127.0.0.1/*'] });
 }
 
-const defaults = defaultsModule(join(root, 'config.local.json'));
+const defaults = defaultsModule(join(root, 'config.local.json'), process.env);
 
 for (const [name, adapt] of Object.entries(variants)) {
   const out = join(root, 'dist', name);

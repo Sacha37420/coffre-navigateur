@@ -21,3 +21,8 @@ test('module généré : vide sans fichier, adresse avec', () => {
   writeFileSync(join(d, 'c.json'), '{"labUrl":"https://lab.exemple.fr"}');
   assert.match(defaultsModule(join(d, 'c.json')), /\{"labUrl":"https:\/\/lab\.exemple\.fr"\}/);
 });
+
+test('LAB_URL de l\'environnement passe avant le fichier, avec le même contrôle', () => {
+  assert.match(defaultsModule('/n/existe/pas.json', { LAB_URL: 'https://ci.exemple.fr' }), /https:\/\/ci\.exemple\.fr/);
+  assert.throws(() => defaultsModule('/n/existe/pas.json', { LAB_URL: 'http://ci.exemple.fr' }));
+});

@@ -4,3 +4,4 @@ node_modules/
 *.zip
 *.xpi
 config.local.json
+paquets/

@@ -14,12 +14,82 @@ Gestionnaire de mots de passe pour Chrome, Edge et Firefox, branché sur le lab 
 Mode d'emploi pour l'utilisateur : `src/pages/guide.html` (aussi ouvert depuis l'extension).
 État d'avancement : `FEUILLE_DE_ROUTE.md`. Format des fichiers : `docs/FORMAT.md`.
 
+## Télécharger et installer
+
+| Navigateur | Linux et Windows | Installation |
+|---|---|---|
+| **Firefox** | [⬇ coffre-firefox.xpi](https://github.com/Sacha37420/coffre-navigateur/releases/latest/download/coffre-firefox.xpi) | un clic |
+| **Chrome** | [⬇ coffre-chrome-edge.zip](https://github.com/Sacha37420/coffre-navigateur/releases/latest/download/coffre-chrome-edge.zip) | mode développeur, 2 minutes |
+| **Edge** | [⬇ coffre-chrome-edge.zip](https://github.com/Sacha37420/coffre-navigateur/releases/latest/download/coffre-chrome-edge.zip) (même fichier que Chrome) | mode développeur, 2 minutes |
+| **Téléphone** | pas encore — voir plus bas | |
+
+L'adresse du lab est déjà préremplie dans l'extension. Une fois installée : icône du coffre →
+« Configurer le coffre », puis suivez le mode d'emploi intégré.
+
+### Firefox (Linux, Windows)
+
+1. Ouvrez le lien **coffre-firefox.xpi** ci-dessus **avec Firefox**.
+2. Firefox affiche « Firefox a empêché ce site de vous demander d'installer un logiciel » :
+   cliquez sur **« Continuer l'installation »**.
+3. Cliquez sur **« Ajouter »**. L'icône du coffre apparaît dans la barre (sinon : pièce de puzzle 🧩
+   → épingler « Coffre du lab »).
+
+Mises à jour : refaire la même chose avec le nouveau fichier ; le coffre et les réglages sont gardés.
+
+### Chrome et Edge (Linux, Windows)
+
+Chrome et Edge n'installent en un clic que depuis leur boutique ; hors boutique, il faut le
+**mode développeur**. C'est sans risque pour l'ordinateur, il permet seulement de charger une
+extension depuis un dossier.
+
+1. Téléchargez **coffre-chrome-edge.zip**.
+2. Décompressez-le dans un dossier **que vous garderez** (par exemple `Documents/coffre-du-lab`) :
+   - Windows : clic droit sur le fichier → « Extraire tout… » → choisir le dossier → « Extraire » ;
+   - Linux : clic droit → « Extraire ici », ou `unzip coffre-chrome-edge.zip -d ~/coffre-du-lab`.
+
+   ⚠ Ne supprimez pas ce dossier ensuite : le navigateur charge l'extension depuis lui.
+3. Ouvrez la page des extensions : tapez `chrome://extensions` (Chrome) ou `edge://extensions`
+   (Edge) dans la barre d'adresse.
+4. Activez **« Mode développeur »** : en haut à droite dans Chrome, dans la colonne de gauche dans Edge.
+5. Cliquez sur **« Charger l'extension non empaquetée »** (Chrome) ou **« Charger l'extension
+   décompressée »** (Edge), puis choisissez le dossier de l'étape 2 (celui qui contient `manifest.json`).
+6. Épinglez l'icône : pièce de puzzle 🧩 → épingle à côté de « Coffre du lab ».
+
+Mises à jour : téléchargez le nouveau zip, **remplacez le contenu** du même dossier, puis cliquez
+sur la flèche circulaire « Actualiser » de l'extension dans la page des extensions. L'identifiant
+de l'extension ne change pas : le coffre, la connexion et les réglages sont gardés.
+
+### Téléphone
+
+- **Chrome pour Android n'accepte aucune extension** : ni par fichier, ni par boutique. Ce n'est
+  pas une limite de cette extension, c'est celle de Chrome sur téléphone.
+- **Firefox et Edge pour Android** n'installent que depuis leur boutique (Mozilla, Microsoft). Une
+  version téléphone passera par là ; elle fait l'objet d'un lot à part (voir `FEUILLE_DE_ROUTE.md`).
+
+## Publier une nouvelle version (mainteneur)
+
+Réglages du dépôt, une fois (Settings → Secrets and variables → Actions) :
+- variable `LAB_URL` = l'adresse du lab à préremplir ;
+- secrets `AMO_JWT_ISSUER` et `AMO_JWT_SECRET` = clés d'API addons.mozilla.org (« Outils » →
+  « Gérer les clés d'API »). Sans eux, Firefox est publié **non signé** et ne s'installe pas en un clic.
+
+Puis, sur la branche publiée, après avoir mis `version` à jour dans `package.json` :
+
+```bash
+git tag v0.3.0 && git push origin v0.3.0
+```
+
+Le workflow `publication` teste, construit, contrôle (`web-ext lint`), fait signer la version
+Firefox par Mozilla (diffusion « non listée » : signée, mais absente de leur catalogue) et publie
+la Release : les liens ci-dessus pointent toujours vers la dernière.
+
 ## Développer
 
 ```bash
 npm test                          # tests unitaires (Node ≥ 20, aucune dépendance)
 npm run build                     # dist/chrome (Chrome et Edge) et dist/firefox
 npm run essai                     # parcours complet dans Chromium (Playwright)
+npm run paquets                   # paquets/ : coffre-chrome-edge.zip, coffre-firefox-non-signe.zip
 ```
 
 **Adresse du lab préremplie** (facultatif, recommandé pour votre installation) : copier

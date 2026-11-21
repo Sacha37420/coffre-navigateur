@@ -115,6 +115,37 @@ pour confirmer son adresse de retour).
 17/17 (Chromium du conteneur, faux lab qui répond 403 comme le vrai, dont jeton révoqué en cours de
 route) ; construction avec `config.local.json` : champ prérempli. Non essayés : Firefox, Edge, le vrai lab.
 
+## Lot 3 bis — Paquets téléchargeables et publication automatique   ·   statut : en cours
+**Objectif :** l'utilisateur télécharge l'extension depuis un lien du README, pour pouvoir faire
+l'essai du lot 3 sans outil de développement.
+**Décisions du propriétaire (2026-11-21) :** diffusion directe, sans boutique (Chrome et Edge en
+mode développeur, Firefox signé par Mozilla en « non listé ») ; adresse du lab préremplie dans les
+paquets publics (variable de dépôt GitHub `LAB_URL`, jamais dans le code) ; ce lot passe avant le
+lot 4, par exception à « un seul lot en cours », parce que l'essai du lot 3 en a besoin.
+**Constat :** Chrome pour Android n'accepte aucune extension (ni fichier, ni boutique) ; Edge pour
+Android et Firefox pour Android ne les prennent que de leur boutique (Firefox Nightly/Bêta : fichier
+signé). Le téléphone fera l'objet d'un lot à part.
+**Tâches :**
+- [x] `scripts/package.mjs` : `paquets/coffre-chrome-edge.zip` (Chrome et Edge, Linux et Windows, même
+  fichier) et `paquets/coffre-firefox-non-signe.zip`
+- [x] `LAB_URL` (environnement) prioritaire sur `config.local.json`, même contrôle
+- [x] Manifeste Firefox : `data_collection_permissions` (exigé par Mozilla pour signer une nouvelle extension)
+- [x] `.github/workflows/publication.yml` : sur une étiquette `v*`, tests, construction avec `LAB_URL`,
+  signature Firefox si les secrets `AMO_JWT_ISSUER`/`AMO_JWT_SECRET` existent, publication des
+  paquets sous des noms fixes (lien `releases/latest/download/…`)
+- [x] README : section « Télécharger » avec les liens et l'installation pas à pas par navigateur
+**Tests à passer avant de clore le lot :**
+- [x] `npm run paquets` : les zip contiennent le manifeste attendu, l'identifiant Chrome inchangé, aucun
+  fichier d'essai (`dist/essai`, faux lab) ni `config.local.json`
+- [x] Paquet Chrome décompressé chargé dans Chromium (`npm run essai` sur le contenu du zip)
+- [ ] `web-ext lint` sans erreur sur le paquet Firefox (refusé dans le conteneur de travail ; joué par le workflow)
+- [ ] Première publication réelle par le propriétaire (étiquette poussée), liens du README vérifiés
+**Vérifié le :** 2026-11-21 — `npm test` 64/64 ; `npm run essai` 25/25 et 17/17 ; `npm run paquets`
+avec `LAB_URL` : zip Chrome décompressé chargé dans Chromium (`EXT_DIR=…`, 25/25), identifiant
+`kainmmlggnfinglcapceocelpngjhnol` conservé, adresse préremplie, aucun fichier d'essai dans les
+paquets ; étape « version » du workflow simulée (v0.3.1 acceptée, v1.2 et latest refusées). Restent :
+`web-ext lint` et la première publication réelle.
+
 ## Lot 4 — Gérer les entrées   ·   statut : à faire
 **Objectif :** ajouter, modifier, supprimer, rechercher, afficher et copier un mot de passe.
 **Tâches :**
