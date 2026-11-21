@@ -1,0 +1,19 @@
+main.wide { max-width: 1100px; }
+header nav { margin: 0; }
+textarea { width: 100%; padding: 8px 10px; border-radius: 6px; font: inherit; border: 1px solid var(--border);
+           background: var(--surface); color: var(--text); }
+input[type=search] { min-height: 44px; width: 100%; padding: 8px 10px; border-radius: 6px; font: inherit;
+                     border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+#layout { display: grid; grid-template-columns: minmax(260px, 1fr) 2fr; gap: 24px; align-items: start; }
+@media (max-width: 900px) { #layout { grid-template-columns: 1fr; } }
+.list-tools { display: flex; gap: 8px; }
+.entry-list { list-style: none; padding: 0; margin: 0; border: 1px solid var(--border); border-radius: 8px;
+              background: var(--surface); max-height: 70vh; overflow: auto; }
+.entry-list li + li { border-top: 1px solid var(--border); }
+.entry-list button { width: 100%; border: 0; border-radius: 0; justify-content: flex-start; text-align: left;
+                     padding: 8px 14px; flex-direction: column; align-items: flex-start; background: transparent; }
+.entry-list button[aria-current=true] { background: var(--bg); box-shadow: inset 4px 0 0 var(--accent); }
+.entry-list .sub { color: var(--muted); font-size: 13px; }
+.field > .with-buttons { display: flex; gap: 6px; }
+.with-buttons input { flex: 1; min-width: 0; }
+.card.inset { margin: 0 0 12px; }

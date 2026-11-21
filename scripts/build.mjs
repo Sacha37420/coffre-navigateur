@@ -42,7 +42,12 @@ const variants = {
 };
 
 if (essai) {
-  variants.essai = (m) => ({ ...variants.chrome(m), host_permissions: ['http://127.0.0.1/*'] });
+  // + lecture du presse-papiers, pour que l'essai vérifie ce qui a été copié.
+  variants.essai = (m) => ({
+    ...variants.chrome(m),
+    host_permissions: ['http://127.0.0.1/*'],
+    permissions: [...m.permissions, 'clipboardRead', 'clipboardWrite'],
+  });
 }
 
 const defaults = defaultsModule(join(root, 'config.local.json'), process.env);

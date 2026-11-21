@@ -51,3 +51,24 @@ export function tombstone(entry, now = Date.now()) {
     created: entry.created, updated: nextStamp(entry.updated, now), deleted: true,
   };
 }
+
+function fold(text) {
+  return String(text ?? '').normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+}
+
+/** Entrées vivantes correspondant à la requête (nom, sites, identifiant), triées par nom. */
+export function searchEntries(entries, query = '') {
+  const words = fold(query).split(/\s+/).filter(Boolean);
+  return entries
+    .filter((e) => !e.deleted)
+    .filter((e) => {
+      const hay = fold([e.name, e.username, ...(e.origins || [])].join(' '));
+      return words.every((w) => hay.includes(w));
+    })
+    .sort((a, b) => fold(a.name).localeCompare(fold(b.name), 'fr') || a.id.localeCompare(b.id));
+}
+
+/** Nom d'hôte lisible d'une origine (pour l'affichage). */
+export function hostOf(origin) {
+  try { return new URL(origin).host; } catch { return ''; }
+}

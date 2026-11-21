@@ -9,6 +9,8 @@ export const K_SETTINGS = 'reglages';
 export const S_KEY = 'session';
 export const DEFAULT_SETTINGS = Object.freeze({ autoLockMinutes: 15 });
 export const AUTO_LOCK_CHOICES = Object.freeze([1, 5, 15, 30, 60, 240]);
+/** Afficher un mot de passe demande une phrase saisie depuis moins de 5 min. */
+export const REAUTH_MS = 5 * 60_000;
 
 /**
  * @param {{ local: Area, session: Area, now?: () => number, schedule?: (when: number|null) => void }} deps
@@ -23,7 +25,7 @@ export function createVaultState({ local, session, now = () => Date.now(), sched
     try {
       const { autoLockMinutes } = await settings();
       const expires = now() + autoLockMinutes * 60_000;
-      await session.set(S_KEY, { key_id: keyId, raw: toB64u(raw), expires });
+      await session.set(S_KEY, { key_id: keyId, raw: toB64u(raw), expires, authAt: now() });
       schedule(expires);
     } finally {
       raw.fill(0);
@@ -100,6 +102,23 @@ export function createVaultState({ local, session, now = () => Date.now(), sched
       } finally {
         raw.fill(0);
       }
+    },
+
+    /** La phrase a-t-elle été saisie (déverrouillage ou confirmation) depuis moins de REAUTH_MS ? */
+    async recentlyAuthenticated() {
+      const s = await readSession();
+      return !!s && now() - (s.authAt ?? 0) < REAUTH_MS;
+    },
+
+    /** Revérifie la phrase sur un coffre déjà ouvert (avant d'afficher un secret). */
+    async confirm(passphrase) {
+      const kf = await local.get(K_FILE);
+      if (!kf) throw new CoffreError('aucun_coffre', 'Aucun coffre dans ce navigateur.');
+      const { raw } = await openKeyFileRaw(kf, passphrase);
+      raw.fill(0);
+      const s = await readSession();
+      if (!s) throw new CoffreError('aucun_coffre', 'Le coffre s\'est verrouillé : déverrouillez-le.');
+      await session.set(S_KEY, { ...s, authAt: now() });
     },
 
     /** Clé utilisable sans repousser le verrouillage (synchronisation de fond). */

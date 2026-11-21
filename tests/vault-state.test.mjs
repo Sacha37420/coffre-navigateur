@@ -164,3 +164,20 @@ test('solidité de la phrase de passe', () => {
   assert.equal(passphraseStrength('cheval agrafe batterie correcte pomme').level, 'bonne');
   assert.equal(passphraseStrength('Tr0ub4dor&3xyzAB').level, 'bonne');
 });
+
+test('confirmation de la phrase : 5 min après le déverrouillage, puis renouvelée', async () => {
+  const { vault, clock } = setup();
+  await vault.install(keyFile, PHRASE);
+  assert.equal(await vault.recentlyAuthenticated(), true);
+  clock.t += 4 * 60_000;
+  await vault.key();                               // l'usage ne compte pas comme une confirmation
+  clock.t += 2 * 60_000;
+  assert.equal(await vault.recentlyAuthenticated(), false);
+  await rejects(vault.confirm('mauvaise phrase de passe'), 'phrase_ou_fichier');
+  assert.equal(await vault.recentlyAuthenticated(), false);
+  await vault.confirm(PHRASE);
+  assert.equal(await vault.recentlyAuthenticated(), true);
+  await vault.lock();
+  assert.equal(await vault.recentlyAuthenticated(), false);
+  await rejects(vault.confirm(PHRASE), 'aucun_coffre');
+});

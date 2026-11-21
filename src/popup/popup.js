@@ -1,5 +1,7 @@
 import { CoffreError } from '../lib/crypto.js';
-import { api, extensionVault } from '../lib/extension.js';
+import { hostOf, searchEntries } from '../lib/entries.js';
+import { api, entryStore, extensionVault } from '../lib/extension.js';
+import { copySecret } from '../ui/clipboard.js';
 import { entropyBits, generatePassword } from '../lib/generator.js';
 
 const $ = (id) => document.getElementById(id);
@@ -45,11 +47,62 @@ render();
 const vault = extensionVault();
 const openManager = () => { api.runtime.openOptionsPage(); window.close(); };
 
+const QUICK_MAX = 8;
+let quick = []; // entrées en clair, mémoire de la popup seulement
+
+function renderQuick() {
+  const found = searchEntries(quick, $('v-q').value);
+  $('v-list').replaceChildren(...found.slice(0, QUICK_MAX).map((e) => {
+    const li = document.createElement('li');
+    const label = document.createElement('span');
+    label.className = 'label';
+    label.textContent = e.name;
+    const sub = document.createElement('span');
+    sub.className = 'sub';
+    sub.textContent = [e.username, ...e.origins.map(hostOf)].filter(Boolean).join(' · ');
+    label.append(sub);
+    const mk = (text, value, what) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = text;
+      b.disabled = !value;
+      b.title = `Copier ${what}`;
+      b.addEventListener('click', async () => {
+        try {
+          await copySecret(value);
+          $('v-info').textContent = `${what[0].toUpperCase()}${what.slice(1)} de « ${e.name} » copié.`;
+        } catch { $('v-info').textContent = 'Copie refusée par le navigateur.'; }
+      });
+      return b;
+    };
+    li.append(label, mk('Id.', e.username, 'l\'identifiant'), mk('Mdp', e.password, 'le mot de passe'));
+    return li;
+  }));
+  const total = quick.filter((e) => !e.deleted).length;
+  if (!$('v-info').textContent.includes('copié')) {
+    $('v-info').textContent = total === 0 ? 'Aucun mot de passe pour l\'instant.'
+      : found.length > QUICK_MAX ? `${found.length} résultats : précisez la recherche.` : '';
+  }
+}
+
 async function refreshVault() {
   const { state } = await vault.status();
   for (const s of ['aucun', 'verrouille', 'deverrouille']) $(`v-${s}`).hidden = s !== state;
   if (state === 'verrouille') $('v-pass').focus();
+  if (state === 'deverrouille') {
+    const k = await vault.key();
+    quick = k ? (await entryStore().decryptAll(k.key, k.keyId)).entries : [];
+    renderQuick();
+    $('v-q').focus();
+  } else {
+    quick = [];
+  }
 }
+
+const openPage = (path) => { api.tabs.create({ url: api.runtime.getURL(path) }); window.close(); };
+$('v-q').addEventListener('input', () => { $('v-info').textContent = ''; renderQuick(); });
+$('v-all').addEventListener('click', () => openPage('pages/entrees.html'));
+$('v-add').addEventListener('click', () => openPage('pages/entrees.html#nouveau'));
 
 async function unlock() {
   $('v-error').hidden = true;

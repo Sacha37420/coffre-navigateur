@@ -239,3 +239,17 @@ test('invalidate : le prochain jeton est rafraîchi, sans fenêtre', async () =>
   assert.equal(await s.auth.token(), 'AR1');
   assert.equal(s.launches.length, 1);
 });
+
+test('recherche : accents et casse ignorés, plusieurs mots, pierres tombales masquées, tri par nom', async () => {
+  const { searchEntries, hostOf } = await import('../src/lib/entries.js');
+  const a = newEntry({ name: 'Électricité', origins: ['edf.fr'], username: 'moi@ex.fr' });
+  const b = newEntry({ name: 'banque', origins: ['https://banque.fr'], username: 'compte42' });
+  const c = newEntry({ name: 'Ancienne banque', origins: ['vieille.fr'] });
+  const all = [b, a, tombstone(c)];
+  assert.deepEqual(searchEntries(all).map((e) => e.name), ['banque', 'Électricité']);
+  assert.deepEqual(searchEntries(all, 'electri').map((e) => e.name), ['Électricité']);
+  assert.deepEqual(searchEntries(all, 'BANQUE.FR').map((e) => e.name), ['banque']);
+  assert.deepEqual(searchEntries(all, 'banque 42').map((e) => e.name), ['banque']);
+  assert.deepEqual(searchEntries(all, 'vieille'), []);
+  assert.equal(hostOf('https://banque.fr:8443'), 'banque.fr:8443');
+});

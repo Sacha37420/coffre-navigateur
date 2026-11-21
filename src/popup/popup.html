@@ -21,9 +21,17 @@
         <p id="v-error" class="alert danger" role="alert" hidden></p>
       </div>
       <div id="v-deverrouille" hidden>
-        <p class="alert ok">Coffre ouvert.</p>
         <div class="row">
-          <button class="primary" id="v-lock" type="button">Verrouiller</button>
+          <input type="search" id="v-q" placeholder="Rechercher un mot de passe" aria-label="Rechercher un mot de passe" autocomplete="off">
+        </div>
+        <ul id="v-list" class="quick-list"></ul>
+        <p id="v-info" class="muted" aria-live="polite"></p>
+        <div class="row">
+          <button class="primary" id="v-all" type="button">Mes mots de passe</button>
+          <button id="v-add" type="button">Ajouter</button>
+        </div>
+        <div class="row">
+          <button id="v-lock" type="button">Verrouiller</button>
           <button id="v-manage2" type="button">Gérer le coffre</button>
         </div>
       </div>

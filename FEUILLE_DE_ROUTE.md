@@ -146,15 +146,31 @@ avec `LAB_URL` : zip Chrome décompressé chargé dans Chromium (`EXT_DIR=…`, 
 paquets ; étape « version » du workflow simulée (v0.3.1 acceptée, v1.2 et latest refusées). Restent :
 `web-ext lint` et la première publication réelle.
 
-## Lot 4 — Gérer les entrées   ·   statut : à faire
+## Lot 4 — Gérer les entrées   ·   statut : livré
 **Objectif :** ajouter, modifier, supprimer, rechercher, afficher et copier un mot de passe.
+**Décision du propriétaire (2026-11-21) :** lot 4 lancé alors que les lots 3 et 3 bis attendent son
+essai et la première publication (exception à « un seul lot en cours »), puis l'application Android.
 **Tâches :**
-- [ ] Liste et recherche ; fiche d'entrée ; générateur intégré à la saisie
-- [ ] Afficher un mot de passe : redemande de la phrase de passe si le déverrouillage date de plus de 5 min
-- [ ] Copier avec effacement du presse-papiers
+- [x] Page « Mes mots de passe » (`pages/entrees.html`) : liste triée, recherche (nom, sites, identifiant ;
+  sans tenir compte des accents ni de la casse), fiche d'entrée (nom, sites un par ligne, identifiant,
+  mot de passe, notes), générateur intégré, enregistrement, suppression confirmée (pierre tombale)
+- [x] Lien « Mes mots de passe » dans la page de gestion ; section du mode d'emploi
+- [x] Popup déverrouillée : recherche, liste courte, copier l'identifiant / le mot de passe, ajouter, tout gérer
+- [x] Afficher un mot de passe : redemande de la phrase de passe si le déverrouillage (ou la dernière
+  confirmation) date de plus de 5 min ; masqué de nouveau après 30 s
+- [x] Copier : presse-papiers vidé au bout de 30 s, si son contenu n'a pas changé entre-temps et tant
+  que la page est ouverte (limite connue : la popup se ferme ; un document hors écran viendra plus tard)
+- [x] Chaque modification part à la synchronisation (si le lab est connecté)
+- [x] Affichage par `textContent` seulement (jamais `innerHTML` d'un contenu d'entrée)
 **Tests à passer avant de clore le lot :**
-- [ ] Tests unitaires du modèle d'entrée (origines normalisées, validation)
-- [ ] Essai Chromium du parcours complet
+- [x] Tests unitaires : recherche, tri, pierres tombales masquées ; confirmation de la phrase et délai de 5 min
+- [x] Essai Chromium du parcours complet : ajouter, rechercher, modifier, afficher (avec et sans
+  redemande), copier, supprimer ; l'entrée créée par l'interface arrive dans un second profil par le faux lab
+**Vérifié le :** 2026-11-21 — `npm test` 66/66 ; `npm run essai` : création 25/25, synchronisation
+17/17, entrées 23/23 (ajout avec générateur, tri, recherche sans accent et par site, origines
+normalisées, affichage direct puis redemande après 5 min, mauvaise phrase refusée, copie, modification,
+contenu hostile affiché comme texte, suppression, popup, rien de clair sur le faux lab, réception par un
+second profil, page vidée au verrouillage). Non essayés : Firefox, Edge, le vrai lab.
 
 ## Lot 5 — Préremplissage   ·   statut : à faire
 **Objectif :** proposer l'identifiant et le mot de passe sur les sites enregistrés, et proposer
