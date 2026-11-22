@@ -138,8 +138,9 @@ signé). Le téléphone fera l'objet d'un lot à part.
 - [x] `npm run paquets` : les zip contiennent le manifeste attendu, l'identifiant Chrome inchangé, aucun
   fichier d'essai (`dist/essai`, faux lab) ni `config.local.json`
 - [x] Paquet Chrome décompressé chargé dans Chromium (`npm run essai` sur le contenu du zip)
-- [ ] `web-ext lint` sans erreur sur le paquet Firefox (refusé dans le conteneur de travail ; joué par le workflow)
-- [ ] Première publication réelle par le propriétaire (étiquette poussée), liens du README vérifiés
+- [x] `web-ext lint` sans erreur sur le paquet Firefox (joué par le workflow le 2026-11-22)
+- [x] Première publication réelle : v0.4.0 le 2026-11-22 (déclenchement manuel, accord du propriétaire ; le proxy de la session refuse de pousser une étiquette), lien Chrome/Edge du README vérifié (zip téléchargé : version 0.4.0, identifiant inchangé)
+- [ ] Lien Firefox du README : attend les secrets Mozilla (`AMO_JWT_ISSUER`/`AMO_JWT_SECRET`) ; adresse préremplie : attend la variable `LAB_URL` (v0.4.0 publiée sans)
 **Vérifié le :** 2026-11-21 — `npm test` 64/64 ; `npm run essai` 25/25 et 17/17 ; `npm run paquets`
 avec `LAB_URL` : zip Chrome décompressé chargé dans Chromium (`EXT_DIR=…`, 25/25), identifiant
 `kainmmlggnfinglcapceocelpngjhnol` conservé, adresse préremplie, aucun fichier d'essai dans les
