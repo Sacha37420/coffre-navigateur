@@ -1,4 +1,6 @@
-# Publication : sur une étiquette v<majeur>.<mineur>.<correctif>, tests, paquets, signature Firefox
+# Publication : sur une étiquette v<majeur>.<mineur>.<correctif> poussée, ou à la main (onglet
+# Actions → publication → Run workflow, en donnant la version : l'étiquette est alors créée par la
+# Release sur le commit choisi), tests, paquets, signature Firefox
 # (si les secrets Mozilla sont posés), puis Release GitHub aux noms de fichier fixes — ce sont eux
 # que pointent les liens « releases/latest/download/… » du README.
 #
@@ -11,6 +13,11 @@ name: publication
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version à publier (1.2.3) ; l'étiquette v1.2.3 est créée"
+        required: true
 
 permissions:
   contents: write
@@ -22,7 +29,7 @@ jobs:
       LAB_URL: ${{ vars.LAB_URL }}
       AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
       AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
-      TAG: ${{ github.ref_name }}
+      TAG: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
 
@@ -71,4 +78,5 @@ jobs:
             echo
             echo "Adresse du lab préremplie : ${LAB_URL:-aucune}."
           } > notes.md
-          gh release create "$TAG" paquets/* --title "Coffre du lab $VERSION" --notes-file notes.md
+          # --target : en déclenchement manuel l'étiquette n'existe pas encore, la Release la crée ici.
+          gh release create "$TAG" paquets/* --target "$GITHUB_SHA" --title "Coffre du lab $VERSION" --notes-file notes.md

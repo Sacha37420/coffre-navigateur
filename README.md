@@ -76,7 +76,9 @@ Réglages du dépôt, une fois (Settings → Secrets and variables → Actions) 
 - secrets `AMO_JWT_ISSUER` et `AMO_JWT_SECRET` = clés d'API addons.mozilla.org (« Outils » →
   « Gérer les clés d'API »). Sans eux, Firefox est publié **non signé** et ne s'installe pas en un clic.
 
-Puis, sur la branche publiée, après avoir mis `version` à jour dans `package.json` :
+Puis, après avoir mis `version` à jour dans `package.json` et poussé : onglet **Actions** →
+**publication** → **Run workflow**, en donnant la version (par exemple `0.4.0`) ; ou bien, depuis un
+poste qui a le droit de pousser des étiquettes :
 
 ```bash
 git tag v0.3.0 && git push origin v0.3.0
