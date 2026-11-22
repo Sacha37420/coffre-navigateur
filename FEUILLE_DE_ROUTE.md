@@ -333,10 +333,17 @@ marqué « sensible », vidé après 30 s).
 - [ ] Tests JVM de la correspondance site ↔ entrée ; essai dans Chrome pour Android (« Saisie
   automatique avec un autre service ») par le propriétaire
 
-## Lot 12 — Android : APK signée publiée et mode d'emploi   ·   statut : à faire
+## Lot 12 — Android : APK signée publiée et mode d'emploi   ·   statut : en cours
 **Objectif :** l'APK signée part avec chaque Release ; lien dans le README ; installation pas à pas.
+**Décision du propriétaire (2026-11-22) :** publier la 0.5.0 de toutes les extensions et de l'APK (Firefox signé plus tard).
 **Tâches :**
-- [ ] Clé de signature dans les secrets GitHub (à garder : la perdre empêche toute mise à jour)
-- [ ] Workflow : construction, tests, signature, publication `coffre-android.apk`
+- [x] Version de l'APK = version publiée (`COFFRE_VERSION` ou `package.json`), code = majeur×10000 + mineur×100 + correctif
+- [x] Signature de publication par variables d'environnement (jamais dans le dépôt) ; workflow : clé décodée des
+  secrets, tests JVM et d'écrans, `assembleRelease`, `lintRelease`, `coffre-android.apk` et empreinte du certificat
+  dans les notes de la Release ; clé effacée du runner
+- [x] README : lien `coffre-android.apk` et installation pas à pas
+- [ ] Clé de publication créée par le propriétaire, mise dans les secrets, son empreinte ajoutée à `assetlinks.json` (hôte)
+- [ ] Publication 0.5.0
 **Tests à passer avant de clore le lot :**
+- [x] `assembleRelease` + `lintRelease` avec une clé jetable : APK signée, version 0.5.0 / 500, non débogable
 - [ ] Installation réelle depuis le lien du README, puis mise à jour par-dessus

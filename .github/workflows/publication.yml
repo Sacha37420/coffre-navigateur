@@ -8,6 +8,8 @@
 #   variable LAB_URL         adresse du lab préremplie dans l'extension (https://domaine), facultative
 #   secret   AMO_JWT_ISSUER  clé d'API addons.mozilla.org (« JWT issuer »), facultative
 #   secret   AMO_JWT_SECRET  secret associé ; sans ces deux secrets, Firefox est publié NON signé
+#   secrets  ANDROID_KEYSTORE_B64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
+#            clé de publication de l'application Android (keystore en base64) ; sans eux, pas d'APK
 name: publication
 
 on:
@@ -29,6 +31,7 @@ jobs:
       LAB_URL: ${{ vars.LAB_URL }}
       AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
       AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+      ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
       TAG: ${{ github.event_name == 'workflow_dispatch' && format('v{0}', inputs.version) || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
@@ -62,6 +65,30 @@ jobs:
           mv signe/*.xpi paquets/coffre-firefox.xpi
           rm paquets/coffre-firefox-non-signe.zip
 
+      - uses: actions/setup-java@v4
+        if: env.ANDROID_KEYSTORE_B64 != ''
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Application Android (tests, construction signée)
+        if: env.ANDROID_KEYSTORE_B64 != ''
+        env:
+          COFFRE_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          COFFRE_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          COFFRE_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          export COFFRE_KEYSTORE="$RUNNER_TEMP/coffre.jks" COFFRE_VERSION="$VERSION"
+          printf '%s' "$ANDROID_KEYSTORE_B64" | base64 -d > "$COFFRE_KEYSTORE"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" > /dev/null
+          cd android
+          ./gradlew --no-daemon :core:test :app:testDebugUnitTest :app:assembleRelease :app:lintRelease
+          cp app/build/outputs/apk/release/app-release.apk ../paquets/coffre-android.apk
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --print-certs ../paquets/coffre-android.apk \
+            | grep 'SHA-256' | sed 's/.*: //' > ../empreinte-android.txt
+          rm -f "$COFFRE_KEYSTORE"
+
       - name: Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -74,6 +101,12 @@ jobs:
               echo "- coffre-firefox.xpi : Firefox, Linux et Windows, signé par Mozilla (cliquer pour installer)."
             else
               echo "- coffre-firefox-non-signe.zip : Firefox, NON signé (secrets Mozilla absents) — module temporaire seulement."
+            fi
+            if [[ -f paquets/coffre-android.apk ]]; then
+              echo "- coffre-android.apk : application Android (Android 8 et plus), à installer en autorisant les applis inconnues (voir le README)."
+              echo "  Empreinte SHA-256 du certificat de signature : $(cat empreinte-android.txt)"
+            else
+              echo "- (pas d'APK : clé de publication Android absente des secrets)"
             fi
             echo
             echo "Adresse du lab préremplie : ${LAB_URL:-aucune}."

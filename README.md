@@ -21,7 +21,7 @@ Mode d'emploi pour l'utilisateur : `src/pages/guide.html` (aussi ouvert depuis l
 | **Firefox** | [⬇ coffre-firefox.xpi](https://github.com/Sacha37420/coffre-navigateur/releases/latest/download/coffre-firefox.xpi) | un clic |
 | **Chrome** | [⬇ coffre-chrome-edge.zip](https://github.com/Sacha37420/coffre-navigateur/releases/latest/download/coffre-chrome-edge.zip) | mode développeur, 2 minutes |
 | **Edge** | [⬇ coffre-chrome-edge.zip](https://github.com/Sacha37420/coffre-navigateur/releases/latest/download/coffre-chrome-edge.zip) (même fichier que Chrome) | mode développeur, 2 minutes |
-| **Téléphone** | pas encore — voir plus bas | |
+| **Android** (Chrome compris) | [⬇ coffre-android.apk](https://github.com/Sacha37420/coffre-navigateur/releases/latest/download/coffre-android.apk) | application, 2 minutes |
 
 L'adresse du lab est déjà préremplie dans l'extension. Une fois installée : icône du coffre →
 « Configurer le coffre », puis suivez le mode d'emploi intégré.
@@ -59,15 +59,22 @@ Mises à jour : téléchargez le nouveau zip, **remplacez le contenu** du même 
 sur la flèche circulaire « Actualiser » de l'extension dans la page des extensions. L'identifiant
 de l'extension ne change pas : le coffre, la connexion et les réglages sont gardés.
 
-### Téléphone
+### Android
 
-- **Une application Android est en cours** (dossier `android/`) : même coffre, et saisie
-  automatique des mots de passe dans Chrome pour Android, que Chrome accepte d'une application
-  tierce depuis sa version 135. Elle sera téléchargeable ici en APK (lot 12 de la feuille de route).
-- **Chrome pour Android n'accepte aucune extension** : ni par fichier, ni par boutique. Ce n'est
-  pas une limite de cette extension, c'est celle de Chrome sur téléphone.
-- **Firefox et Edge pour Android** n'installent que depuis leur boutique (Mozilla, Microsoft). Une
-  version téléphone passera par là ; elle fait l'objet d'un lot à part (voir `FEUILLE_DE_ROUTE.md`).
+Chrome pour Android n'accepte aucune extension : sur téléphone, c'est une **application**, « Coffre du
+lab », qui garde le même coffre et se synchronise avec vos navigateurs.
+
+1. Sur le téléphone, ouvrez le lien **coffre-android.apk** ci-dessus et téléchargez le fichier.
+2. Ouvrez-le (notification de téléchargement, ou application « Fichiers »). Android demande d'autoriser
+   votre navigateur à **installer des applications inconnues** : « Paramètres » → activer → retour.
+3. Touchez **« Installer »**. Play Protect peut prévenir qu'il ne connaît pas l'application : c'est normal
+   pour une application hors Play Store (« Installer quand même »).
+4. Ouvrez « Coffre du lab » : branchez la clé USB qui porte votre fichier `.coffre-cle`, « Choisir le
+   fichier de clé », phrase de passe. Puis, sur l'accueil, « Se connecter » au lab.
+
+Mises à jour : installez la nouvelle APK par-dessus ; le coffre est gardé. Le numéro de version est
+affiché en bas de chaque écran. (Une APK d'essai reçue avant la version 0.5.0 a une autre signature :
+désinstallez-la d'abord.)
 
 ## Publier une nouvelle version (mainteneur)
 
@@ -75,6 +82,10 @@ Réglages du dépôt, une fois (Settings → Secrets and variables → Actions) 
 - variable `LAB_URL` = l'adresse du lab à préremplir ;
 - secrets `AMO_JWT_ISSUER` et `AMO_JWT_SECRET` = clés d'API addons.mozilla.org (« Outils » →
   « Gérer les clés d'API »). Sans eux, Firefox est publié **non signé** et ne s'installe pas en un clic.
+- secrets `ANDROID_KEYSTORE_B64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD` =
+  clé de publication de l'application Android. Sans eux, pas d'APK. **Gardez une copie du keystore hors de
+  GitHub** : perdu, plus aucune mise à jour ne s'installe par-dessus l'application. Son empreinte SHA-256
+  doit figurer dans `https://<domaine>/.well-known/assetlinks.json` (connexion au lab).
 
 Puis, après avoir mis `version` à jour dans `package.json` et poussé : onglet **Actions** →
 **publication** → **Run workflow**, en donnant la version (par exemple `0.4.0`) ; ou bien, depuis un
