@@ -12,8 +12,8 @@ android {
         applicationId = "io.github.sacha37420.coffre"
         minSdk = 26          // AutofillService (lot 11)
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
     }
 
     buildTypes {
@@ -24,6 +24,10 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+    testOptions {
+        // Robolectric (tests JVM des écrans) a besoin des ressources de l'application.
+        unitTests.isIncludeAndroidResources = true
     }
     lint {
         abortOnError = true
@@ -38,4 +42,11 @@ kotlin {
 dependencies {
     // Aucune bibliothèque tierce : le module core (format du coffre) et la plateforme Android.
     implementation(project(":core"))
+    // Tests seulement : rien de ceci n'entre dans l'APK.
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.robolectric:robolectric:4.17")
+}
+
+tasks.withType<Test>().configureEach {
+    systemProperty("coffre.racine", rootProject.projectDir.parentFile.absolutePath)
 }

@@ -200,7 +200,7 @@ Distribution par APK téléchargeable (lien du README), sans boutique. Identifia
 `io.github.sacha37420.coffre` (définitif dès la première installation). Aucune bibliothèque tierce à
 l'exécution : API de la plateforme seulement (JCA, `org.json`, `AutofillService`).
 
-## Lot 7 — Android : socle, format v1 en Kotlin, APK de démonstration   ·   statut : en cours
+## Lot 7 — Android : socle, format v1 en Kotlin, APK de démonstration   ·   statut : livré
 **Objectif :** un module Kotlin pur (`android/core`) qui lit et écrit exactement les fichiers de
 l'extension, prouvé par des vecteurs croisés, et une APK qui s'installe (générateur de mots de passe).
 **Tâches :**
@@ -219,22 +219,38 @@ l'extension, prouvé par des vecteurs croisés, et une APK qui s'installe (gén�
   (mauvaise phrase, fichier altéré, autre clé, id déplacé, itérations abaissées), générateur
 - [x] Vecteur produit par Kotlin vérifié par le code de l'extension (`scripts/verifier-vecteur.mjs`, lancé par le test JVM)
 - [x] `gradle :app:assembleDebug` produit une APK ; `lintDebug` sans erreur
-- [ ] Installation sur un vrai téléphone par le propriétaire (pas d'émulateur ici : pas de KVM)
+- [x] Installation sur un vrai téléphone par le propriétaire (pas d'émulateur ici : pas de KVM) — faite le 2026-11-22 : s'installe et s'ouvre
 **Vérifié le :** 2026-11-21 — `./gradlew :core:test` 10/10 (RFC 7914, PBKDF2 identique au JDK accents
 compris, vecteurs de l'extension ouverts par Kotlin, phrase NFD, enveloppe Kotlin ouverte par l'extension,
 refus, changement de phrase, générateur) ; `:app:assembleDebug` + `:app:lintDebug` : 0 erreur, 4
 avertissements de présentation ; APK : aucune permission, minSdk 26, aucune bibliothèque hors runtime Kotlin.
 SDK Android dans le conteneur depuis l'ajout de `dl.google.com` à l'environnement (accord du propriétaire).
 
-## Lot 8 — Android : coffre local   ·   statut : à faire
+## Lot 8 — Android : coffre local   ·   statut : en cours
 **Objectif :** importer le fichier de clé depuis une clé USB, déverrouiller, verrouiller.
 **Tâches :**
-- [ ] Import du `.coffre-cle` par le sélecteur de fichiers d'Android (clé USB-C ou adaptateur)
-- [ ] Déverrouillage par la phrase ; clé de session protégée par Android Keystore ; verrouillage
-  après inactivité et à la mise en arrière-plan prolongée ; empreinte/visage en option
-- [ ] Écran sécurisé (`FLAG_SECURE` : pas de capture, pas d'aperçu dans les applis récentes)
+- [x] `core` : état du coffre (aucun / verrouillé / déverrouillé), testable sur la JVM : installation
+  (refus d'un autre coffre sans le demander), déverrouillage, verrouillage après inactivité (même
+  choix de délais que l'extension, 15 min par défaut), confirmation de la phrase datée (pour le lot 10)
+- [x] Clé déverrouillée **en mémoire du processus seulement** (jamais écrite) ; fichier de clé (chiffré)
+  dans le stockage privé de l'application
+- [x] Import du `.coffre-cle` par le sélecteur de fichiers d'Android (clé USB-C ou adaptateur OTG),
+  10 ko au plus ; dérivation sur un fil d'arrière-plan avec indicateur
+- [x] Écrans : « importer mon fichier de clé » (consignes USB), « déverrouiller », accueil (générateur,
+  verrouiller, réglages : délai, empreinte, retirer le coffre)
+- [x] Empreinte ou visage (Android 11+ : seule version où la plateforme garantit une biométrie **forte**), en option : clé Android Keystore exigeant l'authentification
+  biométrique **forte** à chaque usage, invalidée si une empreinte est ajoutée ; elle chiffre une copie de la
+  clé de coffre, stockée dans le stockage privé. La phrase reste toujours possible
+- [x] Permission ajoutée : `USE_BIOMETRIC` (normale, sans demande à l'utilisateur) pour l'option empreinte
 **Tests à passer avant de clore le lot :**
-- [ ] Tests JVM de l'état du coffre ; essai sur téléphone par le propriétaire
+- [x] Tests JVM de l'état du coffre (mêmes cas que `tests/vault-state.test.mjs`)
+- [x] Tests des écrans sur la JVM (Robolectric, dépendance de test seulement) : import refusé puis accepté, mauvaise phrase sans effet, ouverture, verrouillage, déverrouillage, retour au premier plan verrouillé, retrait, générateur, copie marquée sensible, `FLAG_SECURE`
+- [x] `assembleDebug` + `lintDebug` sans erreur
+- [ ] Essai sur téléphone par le propriétaire : import depuis une clé USB d'un fichier créé par l'extension,
+  mauvaise phrase, déverrouillage, verrouillage automatique, empreinte
+**Vérifié le :** 2026-11-22 — `./gradlew :core:test` 20/20, `:app:testDebugUnitTest` 2/2 (Robolectric, SDK 35),
+`:app:assembleDebug`, `:app:lintDebug` 0 erreur ; APK : permission `USE_BIOMETRIC` seule, aucun paquet AndroidX
+ni Robolectric embarqué. Reste : l'essai sur téléphone (clé USB réelle, empreinte réelle).
 
 ## Lot 9 — Android : connexion au lab et synchronisation   ·   statut : à faire
 **Objectif :** mêmes entrées que les navigateurs, par `storage`.

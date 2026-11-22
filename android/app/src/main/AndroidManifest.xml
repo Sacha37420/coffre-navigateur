@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Aucune permission au lot 7. Pas de sauvegarde automatique : le coffre ne doit jamais partir dans
+<!-- USE_BIOMETRIC (normale, accordée sans demande) : option « déverrouiller avec l'empreinte » (lot 8). Pas de sauvegarde automatique : le coffre ne doit jamais partir dans
      la sauvegarde Google du téléphone (allowBackup=false, dataExtractionRules vides). -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.USE_BIOMETRIC" />
+
     <application
+        android:name=".CoffreApp"
         android:allowBackup="false"
         android:dataExtractionRules="@xml/extraction_donnees"
         android:fullBackupContent="false"
@@ -14,7 +17,9 @@
 
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

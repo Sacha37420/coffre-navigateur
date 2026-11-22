@@ -63,4 +63,9 @@ boucle locale accordé d'office.
 - Aucune bibliothèque tierce dans l'APK (plateforme Android, `org.json` intégré, runtime Kotlin) ;
   aucune permission non justifiée dans la feuille de route ; `allowBackup=false` et règles
   d'extraction vides : le coffre ne part jamais dans une sauvegarde du téléphone ; `FLAG_SECURE`.
-- Tests : `cd android && ./gradlew :core:test :app:assembleDebug :app:lintDebug`.
+- Tests : `cd android && ./gradlew :core:test :app:testDebugUnitTest :app:assembleDebug :app:lintDebug`
+  (Robolectric simule les écrans sur la JVM ; dépendance de **test** seulement, jamais dans l APK —
+  vérifier avec `apkanalyzer dex packages` qu aucun paquet `androidx` n y entre).
+- La clé de coffre déverrouillée ne vit qu en mémoire du processus (`VaultState`) ; l empreinte ne
+  stocke qu une copie chiffrée par une clé Android Keystore à biométrie forte, invalidée par
+  l ajout d une empreinte.

@@ -7,4 +7,6 @@
     <color name="muted">#6B665E</color>
     <color name="accent">#B4532A</color>
     <color name="accent_text">#FFFFFF</color>
+    <color name="warn_bg">#FFF4DC</color>
+    <color name="danger">#B3261E</color>
 </resources>

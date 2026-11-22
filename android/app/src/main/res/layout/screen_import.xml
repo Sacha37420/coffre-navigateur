@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView style="@style/Coffre.Title" android:text="@string/import_title" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="12dp" android:text="@string/import_intro" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="8dp" android:text="@string/import_step1" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="4dp" android:text="@string/import_step2" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="4dp" android:text="@string/import_step3" />
+        <TextView style="@style/Coffre.Warning" android:layout_marginTop="12dp" android:text="@string/import_warning" />
+
+        <Button
+            android:id="@+id/choose"
+            style="@style/Coffre.Button"
+            android:layout_marginTop="16dp"
+            android:text="@string/choose_file" />
+
+        <TextView android:id="@+id/file_state" style="@style/Coffre.Muted" android:layout_marginTop="8dp" android:text="@string/no_file" />
+
+        <EditText
+            android:id="@+id/import_pass"
+            style="@style/Coffre.Field"
+            android:layout_marginTop="16dp"
+            android:autofillHints="password"
+            android:hint="@string/passphrase"
+            android:importantForAutofill="no"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/import_go"
+            style="@style/Coffre.Button.Primary"
+            android:layout_marginTop="8dp"
+            android:enabled="false"
+            android:text="@string/open_vault" />
+
+        <TextView android:id="@+id/import_msg" style="@style/Coffre.Error" android:layout_marginTop="8dp" android:visibility="gone" />
+        <ProgressBar android:id="@+id/import_busy" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" android:indeterminate="true" android:visibility="gone" />
+    </LinearLayout>
+</ScrollView>
