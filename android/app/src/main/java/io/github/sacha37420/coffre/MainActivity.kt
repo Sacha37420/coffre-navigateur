@@ -84,7 +84,7 @@ class MainActivity : Activity() {
 
     private val watch = object : Runnable {
         override fun run() {
-            if (vault.state() != screen) route()
+            if (vault.state() != screen) { if (vault.state() != VaultState.State.DEVERROUILLE) coffre.onLocked(); route() }
             handler.postDelayed(this, WATCH_MS)
         }
     }
@@ -231,9 +231,65 @@ class MainActivity : Activity() {
     private fun showHome() {
         setContentView(R.layout.screen_home)
         findViewById<TextView>(R.id.home_state).text = getString(R.string.home_open, vault.keyId().orEmpty().take(6))
-        findViewById<Button>(R.id.home_lock).setOnClickListener { vault.lock(); route() }
+        findViewById<Button>(R.id.home_lock).setOnClickListener { vault.lock(); coffre.onLocked(); route() }
         setupGenerator()
         setupSettings()
+        setupLab()
+        // Au déverrouillage (et à chaque retour sur l'accueil) : un passage de synchronisation si le lab est relié.
+        if (coffre.lab?.connected() == true) runSync()
+    }
+
+    // ---------- Connexion au lab ----------
+
+    private fun setupLab() {
+        val lab = coffre.lab
+        val intro = findViewById<TextView>(R.id.lab_intro)
+        val login = findViewById<Button>(R.id.lab_login)
+        val sync = findViewById<Button>(R.id.lab_sync)
+        val logout = findViewById<Button>(R.id.lab_logout)
+        if (lab == null) {
+            intro.setText(R.string.lab_none)
+            listOf(login, sync, logout).forEach { it.visibility = View.GONE }
+            return
+        }
+        intro.text = getString(R.string.lab_intro, lab.endpoints.origin.removePrefix("https://"))
+        login.setOnClickListener {
+            try {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(lab.beginLogin())).addCategory(Intent.CATEGORY_BROWSABLE))
+                Toast.makeText(this, R.string.lab_browser, Toast.LENGTH_LONG).show()
+            } catch (e: android.content.ActivityNotFoundException) {
+                findViewById<TextView>(R.id.home_msg).show(getString(R.string.lab_no_browser))
+            }
+        }
+        sync.setOnClickListener { runSync() }
+        logout.setOnClickListener {
+            worker.execute { lab.logout(); runOnUiThread { refreshLab() } }
+        }
+        refreshLab()
+    }
+
+    private fun refreshLab() {
+        val lab = coffre.lab ?: return
+        val online = lab.connected()
+        val user = lab.username
+        findViewById<TextView>(R.id.lab_state)?.text = when {
+            online && user != null -> getString(R.string.lab_connected, user)
+            user != null -> getString(R.string.lab_expired)
+            else -> getString(R.string.lab_disconnected)
+        }
+        findViewById<Button>(R.id.lab_login)?.visibility = if (online) View.GONE else View.VISIBLE
+        findViewById<Button>(R.id.lab_sync)?.visibility = if (online) View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.lab_logout)?.visibility = if (online) View.VISIBLE else View.GONE
+        findViewById<TextView>(R.id.lab_sync_state)?.text = coffre.lastSync()?.let {
+            getString(R.string.sync_last, java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.SHORT).format(java.util.Date(it.at)), it.text)
+        } ?: ""
+        val count = vault.peekKey()?.let { v -> coffre.entries.decryptAll(v).first.count { !it.optBoolean("deleted") } } ?: 0
+        findViewById<TextView>(R.id.entries_count)?.text = getString(R.string.entries_count, count)
+    }
+
+    private fun runSync() {
+        findViewById<TextView>(R.id.lab_sync_state)?.setText(R.string.sync_running)
+        coffre.syncNow { runOnUiThread { if (screen == VaultState.State.DEVERROUILLE) refreshLab() } }
     }
 
     private fun setupSettings() {
@@ -267,7 +323,7 @@ class MainActivity : Activity() {
 
         findViewById<Button>(R.id.forget).setOnClickListener {
             AlertDialog.Builder(this).setMessage(R.string.forget_confirm)
-                .setPositiveButton(R.string.forget) { _, _ -> bio.disable(); vault.forget(); route() }
+                .setPositiveButton(R.string.forget) { _, _ -> worker.execute { coffre.forgetAll(); runOnUiThread { route() } } }
                 .setNegativeButton(R.string.cancel, null).show()
         }
     }

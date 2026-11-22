@@ -253,15 +253,42 @@ SDK Android dans le conteneur depuis l'ajout de `dl.google.com` à l'environneme
 `:app:assembleDebug`, `:app:lintDebug` 0 erreur ; APK : permission `USE_BIOMETRIC` seule, aucun paquet AndroidX
 ni Robolectric embarqué. Reste : l'essai sur téléphone (clé USB réelle, empreinte réelle).
 
-## Lot 9 — Android : connexion au lab et synchronisation   ·   statut : à faire
+## Lot 9 — Android : connexion au lab et synchronisation   ·   statut : en cours
 **Objectif :** mêmes entrées que les navigateurs, par `storage`.
+**Décisions du propriétaire (2026-11-22) :** lot lancé avant la fin de l'essai du lot 8 (exception à
+« un seul lot en cours ») ; retour de connexion par **Android App Links** (option 3) :
+`https://<domaine>/coffre-retour/`, fichier `/.well-known/assetlinks.json` et page de secours servis par
+`fallback`, adresse ajoutée au client `coffre-navigateur` (fait sur l'hôte le 2026-11-22, rapport du
+propriétaire : Google reconnaît le lien, trois adresses de retour, PKCE S256, flow lié).
 **Tâches :**
-- [ ] Connexion Keycloak dans le navigateur du téléphone, code + PKCE S256, retour par schéma
-  d'application ; **réglage côté lab** : adresse de retour non `http(s)` (adapter
-  `create-app-client.sh` ou l'ajouter à la main), à faire par le propriétaire
-- [ ] Client `storage` et synchronisation : même algorithme que `src/lib/sync.js`, mêmes tests
+- [x] Adresse du lab **fixée à la construction** (`LAB_URL` ou `config.local.json`, comme l'extension) :
+  l'APK revendique l'adresse de retour de ce lab-là et pas d'autre ; sans adresse, la connexion est désactivée
+- [x] `core` : adresses du lab, OIDC code + PKCE S256 (`state` vérifié), client `storage` (Bearer, 401
+  comme 403 ⇒ un renouvellement puis refus), synchronisation identique à `src/lib/sync.js` (fusion par
+  `updated`, pierres tombales, entrée disparue redéposée, enveloppe illisible ignorée, autre clé refusée),
+  client HTTP sur `HttpURLConnection` (plateforme)
+- [x] Jetons : en mémoire ; le jeton de rafraîchissement est aussi gardé **chiffré par la clé du coffre**
+  (AES-GCM) dans le stockage privé, donc inutilisable coffre verrouillé ; vérificateur PKCE en attente gardé
+  10 min au plus pendant le passage par le navigateur
+- [x] Connexion par le navigateur du téléphone ; retour par l'activité `RetourActivity`
+  (`autoVerify`, seul chemin `/coffre-retour/` de ce domaine)
+- [x] Accueil : carte « Connexion au lab » (se connecter, synchroniser, se déconnecter, dernier passage) ;
+  synchronisation au déverrouillage et à la demande
+- [x] Permission ajoutée : `INTERNET` (normale) pour joindre le lab
 **Tests à passer avant de clore le lot :**
-- [ ] Tests JVM contre un faux storage ; essai réel par le propriétaire (téléphone + navigateur)
+- [x] Tests JVM : adresses, PKCE, URL d'autorisation, retour (`state`, erreur, autre adresse), jetons
+  (rafraîchissement, renouvellement), client `storage` et synchronisation **contre le faux lab de
+  l'extension** (`scripts/faux-lab.cjs`, vrai HTTP), interopérabilité : enveloppe déposée par l'extension (vecteur) reçue par la synchronisation Android
+- [x] Tests d'écrans (Robolectric) : bouton « Se connecter » → navigateur avec PKCE ; retour → connecté et synchronisé
+- [ ] Essai réel par le propriétaire : connexion depuis le téléphone, entrée créée dans le navigateur visible
+  sur le téléphone (compte des entrées) et inversement au lot 10
+**Vérifié le :** 2026-11-22 — `./gradlew :core:test` 39/39 (dont connexion par le faux Keycloak et synchronisation
+à deux appareils en **vrai HTTP** contre `scripts/faux-lab.cjs`, adresse de retour étrangère refusée ;
+jetons chiffrés par la clé du coffre, illisibles coffre verrouillé ou avec un autre coffre ; 403 ⇒ un
+renouvellement), `:app:testDebugUnitTest` 5/5 (« Se connecter » → navigateur PKCE, retour à `state` faux
+refusé, vrai retour → connecté, synchronisé, rien de clair sur le faux lab, déconnexion), `assembleDebug`,
+`lintDebug` 0 erreur ; APK : `INTERNET` et `USE_BIOMETRIC` seulement, App Link vers
+`https://sacha37420.hopto.org/coffre-retour/` avec `autoVerify`, aucun paquet AndroidX. Reste : l'essai réel.
 
 ## Lot 10 — Android : gérer les entrées   ·   statut : à faire
 **Objectif :** liste, recherche, fiche, générateur, affichage avec redemande, copie (presse-papiers

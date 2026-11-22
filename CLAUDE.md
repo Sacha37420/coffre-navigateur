@@ -69,3 +69,8 @@ boucle locale accordé d'office.
 - La clé de coffre déverrouillée ne vit qu en mémoire du processus (`VaultState`) ; l empreinte ne
   stocke qu une copie chiffrée par une clé Android Keystore à biométrie forte, invalidée par
   l ajout d une empreinte.
+- L'adresse du lab est **fixée à la construction** de l'APK (`LAB_URL` ou `config.local.json`) : l'APK ne
+  revendique (App Links, `autoVerify`) que `https://<ce lab>/coffre-retour/`. Le jeton d'accès vit en
+  mémoire ; le jeton de rafraîchissement n'est écrit que chiffré par la clé du coffre. L'adresse de
+  retour reçue n'est jamais journalisée ni affichée.
+- Une synchronisation ne repousse jamais le verrouillage automatique (`peekKey`).

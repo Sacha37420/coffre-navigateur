@@ -77,6 +77,15 @@ class VaultStateTest {
         assertNull(vault.rawKeyCopy())
     }
 
+    @Test fun `peekKey ne repousse pas le verrouillage`() {
+        vault.install(keyFile, phrase)
+        t += 10 * 60_000
+        assertNotNull(vault.peekKey())
+        t += 6 * 60_000
+        assertNull(vault.peekKey())
+        assertEquals(VaultState.State.VERROUILLE, vault.state())
+    }
+
     @Test fun `delai reglable, valeurs fermees`() {
         vault.setAutoLockMinutes(5)
         vault.install(keyFile, phrase)

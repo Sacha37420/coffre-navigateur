@@ -12,7 +12,7 @@
     <string name="ambiguous">sans caractères ambigus (l, 1, O, 0…)</string>
     <string name="entropy">Environ %1$d bits d\'entropie.</string>
     <string name="copied">Copié. Le presse-papiers sera vidé dans 30 s si l\'application reste ouverte.</string>
-    <string name="coming">Mots de passe, connexion au lab et saisie automatique dans Chrome arrivent dans les prochaines versions.</string>
+    <string name="coming">La liste des mots de passe et la saisie automatique dans Chrome arrivent dans les prochaines versions.</string>
     <string name="import_title">Importer mon fichier de clé</string>
     <string name="import_intro">Votre coffre se crée sur un ordinateur, avec l\'extension « Coffre du lab ». Pour l\'utiliser sur ce téléphone :</string>
     <string name="import_step1">1. Branchez la clé USB qui porte votre fichier .coffre-cle (prise USB-C, ou un adaptateur USB-C / USB-A).</string>
@@ -49,4 +49,22 @@
     <string name="minutes">%1$d min</string>
     <string name="hours">%1$d h</string>
     <string name="version">Version %1$s</string>
+    <string name="lab_title">Connexion au lab</string>
+    <string name="lab_intro">Vos mots de passe sont déposés chiffrés dans votre espace du lab (%1$s), pour les retrouver sur vos navigateurs. Le fichier de clé, lui, ne passe jamais par le lab.</string>
+    <string name="lab_none">Cette version de l\'application a été construite sans adresse de lab : la synchronisation est désactivée.</string>
+    <string name="lab_login">Se connecter</string>
+    <string name="lab_sync">Synchroniser maintenant</string>
+    <string name="lab_logout">Se déconnecter</string>
+    <string name="lab_connected">Connecté : espace « %1$s ».</string>
+    <string name="lab_disconnected">Non connecté.</string>
+    <string name="lab_expired">Session expirée : reconnectez-vous.</string>
+    <string name="lab_browser">La page de connexion du lab s\'ouvre dans le navigateur. Si l\'application ne revient pas d\'elle-même, touchez « Ouvrir l\'application » sur la page.</string>
+    <string name="lab_no_browser">Aucun navigateur n\'est installé pour ouvrir la page de connexion.</string>
+    <string name="lab_login_failed">La connexion n\'a pas abouti : recommencez depuis l\'application.</string>
+    <string name="sync_running">Synchronisation…</string>
+    <string name="sync_last">Dernière synchronisation : %1$s — %2$s</string>
+    <string name="sync_report">%1$d reçue(s), %2$d envoyée(s)</string>
+    <string name="sync_restored">, %1$d redéposée(s)</string>
+    <string name="sync_ignored">, %1$d illisible(s) ignorée(s)</string>
+    <string name="entries_count">Mots de passe dans ce téléphone : %1$d (affichage complet au prochain lot).</string>
 </resources>

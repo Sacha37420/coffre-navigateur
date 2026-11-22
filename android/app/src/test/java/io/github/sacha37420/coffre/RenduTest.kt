@@ -19,7 +19,13 @@ import java.io.File
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(sdk = [35])
 class RenduTest {
-    private fun capture(name: String) {
+    private fun capture(name: String, unlocked: Boolean = false) {
+        if (unlocked) {
+            val v = org.json.JSONObject(File(System.getProperty("coffre.racine") ?: "../..", "tests/vecteurs/v1.json").readText())
+            val first = Robolectric.buildActivity(MainActivity::class.java).setup().get()
+            first.coffre.setupLab("https://lab.essai.fr")
+            first.coffre.vault.install(v.getJSONObject("keyFile"), v.getString("passphrase"))
+        }
         val a = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         val root: View = a.window.decorView
         val bmp = Bitmap.createBitmap(root.width.coerceAtLeast(1), root.height.coerceAtLeast(1), Bitmap.Config.ARGB_8888)
@@ -31,4 +37,6 @@ class RenduTest {
     @Test @Config(qualifiers = "w393dp-h851dp-xxhdpi") fun importClair() = capture("import-clair")
 
     @Test @Config(qualifiers = "w393dp-h851dp-night-xxhdpi") fun importSombre() = capture("import-sombre")
+
+    @Test @Config(qualifiers = "w393dp-h1600dp-xxhdpi") fun accueil() = capture("accueil", unlocked = true)
 }

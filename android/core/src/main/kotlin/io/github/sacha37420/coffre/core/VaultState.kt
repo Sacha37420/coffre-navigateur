@@ -112,6 +112,13 @@ class VaultState(private val storage: VaultStorage, private val now: () -> Long 
         return s.vault
     }
 
+    /** Clé utilisable sans repousser le verrouillage (synchronisation de fond). */
+    @Synchronized
+    fun peekKey(): CoffreCrypto.VaultKey? = live()?.vault
+
+    /** Le fichier de clé (chiffré) de ce téléphone. */
+    fun keyFile(): JSONObject? = storage.readKeyFile()
+
     /** Copie de la clé brute du coffre ouvert (pour activer l'empreinte) ; l'appelant l'efface. */
     @Synchronized
     fun rawKeyCopy(): ByteArray? = live()?.vault?.key?.encoded
