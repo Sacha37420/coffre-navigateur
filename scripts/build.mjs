@@ -47,6 +47,11 @@ if (essai) {
     ...variants.chrome(m),
     host_permissions: ['http://127.0.0.1/*'],
     permissions: [...m.permissions, 'clipboardRead', 'clipboardWrite'],
+    // Les pages d'essai sont servies en http sur la boucle locale.
+    web_accessible_resources: m.web_accessible_resources.map((r) => ({ ...r, matches: [...r.matches, 'http://127.0.0.1/*'] })),
+    content_security_policy: {
+      extension_pages: m.content_security_policy.extension_pages.replace("frame-ancestors 'self' https:", "frame-ancestors 'self' https: http://127.0.0.1:*"),
+    },
   });
 }
 
@@ -61,6 +66,9 @@ for (const [name, adapt] of Object.entries(variants)) {
     filter: (p) => !p.endsWith('manifest.base.json'),
   });
   writeFileSync(join(out, 'manifest.json'), JSON.stringify(adapt(base), null, 2) + '\n');
-  writeFileSync(join(out, 'defaults.js'), name === 'essai' ? defaultsModule('') : defaults);
+  // dist/essai : boucle locale admise (préremplissage sur les pages d'essai), jamais distribué.
+  writeFileSync(join(out, 'defaults.js'), name === 'essai'
+    ? '// Généré par scripts/build.mjs — construction d\'essai, jamais distribuée.\nexport default Object.freeze({"labUrl":"","essai":true});\n'
+    : defaults);
   console.log(`✓ dist/${name}`);
 }

@@ -87,8 +87,11 @@ const storageDump = (page, areaName) => page.evaluate((a) => chrome.storage[a].g
   const local = await storageDump(page, 'local');
   const session = await storageDump(page, 'session');
   // Chrome rend les champs triés : comparaison profonde, pas textuelle.
-  check('storage.local = fichier de clé chiffré seulement',
-    Object.keys(local).join() === 'cle' && require('util').isDeepStrictEqual(local.cle, keyFile));
+  // storage.local : le fichier de clé chiffré et, au plus, l'index des sites connus (empreintes seulement).
+  check('storage.local = fichier de clé chiffré (+ index d\'empreintes) seulement',
+    Object.keys(local).every((k) => ['cle', 'index_sites'].includes(k))
+    && require('util').isDeepStrictEqual(local.cle, keyFile)
+    && (local.index_sites || []).every((h) => /^[0-9a-f]{64}$/.test(h)), Object.keys(local).join());
   check('clé brute en storage.session, absente de storage.local',
     typeof session.session?.raw === 'string' && !JSON.stringify(local).includes(session.session.raw));
   check('phrase de passe écrite nulle part',

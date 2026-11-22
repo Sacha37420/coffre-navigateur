@@ -163,6 +163,21 @@
       </details>
     </div>
 
+    <div class="card" id="prefill-card">
+      <h3>Préremplissage sur les sites</h3>
+      <p>Sur les sites en https : proposer les comptes enregistrés dès que vous touchez un champ de
+        connexion, offrir un bouton « nouveau mot de passe » sur les formulaires, et proposer
+        d'enregistrer un mot de passe quand vous le saisissez. Rien n'est jamais rempli sans votre clic.</p>
+      <p class="muted">L'activation demande au navigateur l'accès aux sites en https : c'est ce qui permet à
+        l'extension de repérer les formulaires. La liste de vos comptes, elle, n'est jamais donnée aux sites.</p>
+      <p id="pf-state" aria-live="polite"></p>
+      <div class="actions">
+        <button id="pf-on" class="primary" type="button">Activer</button>
+        <button id="pf-off" type="button" hidden>Désactiver</button>
+        <button id="pf-forget" type="button">Oublier les sites « Jamais »</button>
+      </div>
+    </div>
+
     <div class="card">
       <h3>Verrouillage automatique</h3>
       <label class="field"><span>Verrouiller après une inactivité de</span>

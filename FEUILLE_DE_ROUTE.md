@@ -173,16 +173,46 @@ normalisées, affichage direct puis redemande après 5 min, mauvaise phrase refu
 contenu hostile affiché comme texte, suppression, popup, rien de clair sur le faux lab, réception par un
 second profil, page vidée au verrouillage). Non essayés : Firefox, Edge, le vrai lab.
 
-## Lot 5 — Préremplissage   ·   statut : à faire
-**Objectif :** proposer l'identifiant et le mot de passe sur les sites enregistrés, et proposer
-d'enregistrer un nouveau compte.
+## Lot 5 — Préremplissage et enregistrement sur les sites   ·   statut : livré
+**Objectif :** proposer d'enregistrer un mot de passe dès qu'il est saisi sur un site, proposer
+systématiquement les comptes connus, et offrir un bouton « nouveau mot de passe » sur les formulaires.
+**Décisions du propriétaire (2026-11-22) :** les mots de passe s'enregistrent quand on les saisit, après
+validation dans le navigateur ; le préremplissage est proposé systématiquement quand l'hôte est connu ;
+des boutons permettent de remplir un formulaire avec un nouveau mot de passe généré. Lot repris avant
+la fin des essais des lots 8 et 9 (exception à « un seul lot en cours »).
+**Ce qui reste interdit (sécurité) :** remplir sans geste de l'utilisateur. La liste s'ouvre d'elle-même,
+le remplissage se fait au clic : sinon une page piégée (formulaire invisible) récolte les mots de passe.
 **Tâches :**
-- [ ] Script de contenu : détection des formulaires, remplissage seulement sur origine exacte et
-  seulement à la demande de l'utilisateur (clic), jamais dans un cadre d'une autre origine
-- [ ] Proposition d'enregistrement après soumission d'un formulaire
+- [x] Activation par l'utilisateur (« Préremplissage sur les sites ») : autorisation `https://*/*` demandée
+  à ce moment, script de contenu enregistré dynamiquement (`scripting`) ; désactivation = retrait des deux
+- [x] Script de contenu (cadre principal seulement, https) : repère les champs de connexion et de création
+  de compte, ajoute un bouton dans les champs ; il ne reçoit **jamais** la liste des comptes ni une clé
+- [x] Liste des comptes dans un **cadre de l'extension** (illisible par la page) : comptes de l'origine
+  exacte de l'onglet, établie par le processus de fond d'après l'onglet lui-même, jamais d'après la page ;
+  ouverte d'elle-même au focus si l'hôte est connu ; « Générer un nouveau mot de passe » toujours proposé
+- [x] Remplissage : au clic dans le cadre de l'extension seulement ; le processus de fond revérifie que
+  l'entrée appartient à l'origine de l'onglet, le script de contenu revérifie son origine avant de remplir
+- [x] Enregistrement : à la soumission d'un formulaire, proposition dans un cadre de l'extension
+  (« Enregistrer » / « Mettre à jour » / « Pas maintenant » / « Jamais pour ce site ») ; proposition gardée
+  3 min en mémoire de session (survit au changement de page) ; coffre verrouillé : reprise dans la popup
+- [x] Index local des sites connus = empreintes SHA-256 (clé du coffre + origine), pour savoir sans
+  déverrouiller si un site est connu ; sites refusés (« Jamais ») gardés aussi en empreintes
+- [x] CSP : `frame-ancestors 'self' https:` (au lieu de 'none') pour que les sites puissent afficher les deux seuls cadres accessibles (menu, barre) ; aucune autre page de l'extension n'est accessible aux sites
+- [x] Un cadre de l'extension placé dans un site ne vise que son propre onglet ; seule une page de l'extension de premier niveau (popup) peut en nommer un
+- [x] Permissions ajoutées : `scripting` (enregistrer le script de contenu après accord) ;
+  `https://*/*` reste facultative et demandée à l'activation
 **Tests à passer avant de clore le lot :**
-- [ ] Essai Chromium sur des pages de test locales : bonne origine remplie, sous-domaine, autre
-  port, cadre étranger et page en http refusés
+- [x] Essai Chromium sur des pages de test locales : enregistrement après soumission (nouveau, mise à jour,
+  sans doublon), liste proposée au focus sur l'hôte connu, remplissage au clic, rien de proposé pour une
+  autre origine (autre port), génération sur une création de compte (deux champs identiques) puis
+  enregistrement, « Jamais pour ce site », coffre verrouillé, la page ne peut pas lire le cadre de l'extension,
+  cadre d'une autre origine jamais rempli
+**Vérifié le :** 2026-11-22 — `npm test` 70/70 ; `npm run essai` : création 25/25, synchronisation 17/17, entrées 23/23,
+préremplissage 33/33 (trois origines locales : enregistrement après soumission, mise à jour sans doublon, rien si
+inchangé, liste ouverte au focus sur site connu, rien rempli avant le clic, remplissage au clic avec événements de
+saisie, création de compte avec mot de passe généré dans les deux champs, autre port jamais proposé, cadre d'une
+autre origine sans script, « Jamais pour ce site », coffre verrouillé puis reprise, cadre ne visant pas un autre
+onglet, racine d'ombre fermée, index en empreintes seulement). Non essayés : Firefox, Edge, de vrais sites.
 
 ## Lot 6 — Empaquetage et mode d'emploi   ·   statut : à faire
 **Objectif :** une extension installable dans les trois navigateurs et un guide utilisateur complet.

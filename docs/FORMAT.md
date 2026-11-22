@@ -102,6 +102,13 @@ Aucun secret. Sert à refuser de synchroniser avec un navigateur qui a chargé u
   un processus de fond d'extension est arrêté par le navigateur au bout de quelques secondes
   d'inactivité, une clé gardée en mémoire du processus serait perdue à chaque fois.
 - `expires` recule à chaque utilisation ; passé ce délai, la session est effacée (verrouillage).
+- `storage.session`, sous `propositions` : `{ <id d'onglet>: { origin, username, password, kind, entryId, at } }`,
+  la proposition d'enregistrement faite après une soumission de formulaire, 3 minutes au plus, en mémoire
+  seulement, effacée dès qu'on y répond.
+- `storage.local`, sous `index_sites` et `sites_refuses` : empreintes SHA-256 hexadécimales de
+  `<key_id>|<origin>` (sites connus du coffre ; sites « Jamais pour ce site »), pour savoir sans
+  déverrouiller si un site est connu. Limite : quelqu'un qui lit le disque peut tester une liste de
+  sites contre ces empreintes (le `key_id` est public).
 
 ## 6. Ce que le chiffrement ne protège pas (limites connues)
 

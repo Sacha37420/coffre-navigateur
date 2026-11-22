@@ -1,0 +1,12 @@
+@import url('../ui/theme.css');
+html, body { margin: 0; background: var(--surface); font-size: 14px; }
+main { padding: 10px; }
+.titre { font-weight: 600; margin: 0 0 8px; display: flex; justify-content: space-between; align-items: center; }
+.titre small { color: var(--muted); font-weight: 400; }
+ul { list-style: none; margin: 0 0 8px; padding: 0; }
+li button { width: 100%; justify-content: flex-start; text-align: left; flex-direction: column; align-items: flex-start;
+            border: 0; border-bottom: 1px solid var(--border); border-radius: 0; padding: 6px 8px; background: transparent; }
+li button:hover, li button:focus-visible { background: var(--bg); }
+.sub { color: var(--muted); font-size: 12px; }
+.actions { margin-top: 8px; }
+.muted { margin: 6px 0; }

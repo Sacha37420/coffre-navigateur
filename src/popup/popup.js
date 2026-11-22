@@ -1,6 +1,6 @@
 import { CoffreError } from '../lib/crypto.js';
 import { hostOf, searchEntries } from '../lib/entries.js';
-import { api, entryStore, extensionVault } from '../lib/extension.js';
+import { api, ask, entryStore, extensionVault } from '../lib/extension.js';
 import { copySecret } from '../ui/clipboard.js';
 import { entropyBits, generatePassword } from '../lib/generator.js';
 
@@ -89,6 +89,7 @@ async function refreshVault() {
   const { state } = await vault.status();
   for (const s of ['aucun', 'verrouille', 'deverrouille']) $(`v-${s}`).hidden = s !== state;
   if (state === 'verrouille') $('v-pass').focus();
+  await refreshProposal(state);
   if (state === 'deverrouille') {
     const k = await vault.key();
     quick = k ? (await entryStore().decryptAll(k.key, k.keyId)).entries : [];
@@ -98,6 +99,32 @@ async function refreshVault() {
     quick = [];
   }
 }
+
+// Proposition d'enregistrement en attente pour l'onglet actif (faite coffre verrouillé, par exemple).
+let activeTabId = null;
+async function refreshProposal(state) {
+  $('v-proposition').hidden = true;
+  try {
+    const [tab] = await api.tabs.query({ active: true, currentWindow: true });
+    if (!tab) return;
+    activeTabId = tab.id;
+    const r = await ask('save:details', { tabId: tab.id });
+    if (!r.proposition) return;
+    const p = r.proposition;
+    const who = p.username ? ` pour « ${p.username} »` : '';
+    $('v-prop-text').textContent = `${p.kind === 'maj' ? 'Mettre à jour' : 'Enregistrer'} le mot de passe de ${p.host}${who} ?`
+      + (state === 'deverrouille' ? '' : ' Déverrouillez d\'abord le coffre.');
+    $('v-prop-oui').disabled = state !== 'deverrouille';
+    $('v-proposition').hidden = false;
+  } catch { /* pas d'onglet accessible */ }
+}
+$('v-prop-oui').addEventListener('click', async () => {
+  try { await ask('save:enregistrer', { tabId: activeTabId }); await refreshVault(); } catch (e) { $('v-prop-text').textContent = e.message; }
+});
+$('v-prop-non').addEventListener('click', async () => {
+  try { await ask('save:ignorer', { tabId: activeTabId }); } catch { /* rien */ }
+  $('v-proposition').hidden = true;
+});
 
 const openPage = (path) => { api.tabs.create({ url: api.runtime.getURL(path) }); window.close(); };
 $('v-q').addEventListener('input', () => { $('v-info').textContent = ''; renderQuick(); });

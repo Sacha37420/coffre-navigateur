@@ -36,7 +36,12 @@ Même discipline que le lab : écrire le lot dans `FEUILLE_DE_ROUTE.md` avant de
 - Le processus de fond ne répond qu'aux pages de l'extension (`sender.id` et `sender.url`) : un
   script de contenu ne doit jamais pouvoir demander une synchronisation, une connexion ou une clé.
 - Permissions au plus juste : chaque permission ajoutée est justifiée dans la feuille de route.
-- Préremplissage seulement sur **origine exacte** et à la demande de l'utilisateur.
+- Préremplissage seulement sur **origine exacte** et à la demande de l'utilisateur : la liste des comptes
+  peut s'ouvrir d'elle-même, mais le remplissage n'a lieu qu'au clic dans un **cadre de l'extension**.
+- Le script de contenu (`src/content/`) ne reçoit jamais ni clé, ni liste de comptes, ni nom de compte :
+  il signale des champs et une soumission, et reçoit un remplissage pour sa propre origine, revérifiée.
+  L'origine d'une demande est toujours celle de l'onglet vue par le processus de fond (`sender.tab`),
+  jamais une valeur envoyée par la page. Pas de `postMessage` entre le cadre de l'extension et la page.
 - Interface : tokens CSS (aucune couleur en dur hors des `:root`), cibles de 44 px minimum.
 
 ## Lab

@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="fr">
+<head><meta charset="utf-8"><title>Coffre du lab</title><link rel="stylesheet" href="inline.css"></head>
+<body>
+<main>
+  <p class="titre"><span>Coffre du lab</span></p>
+  <p id="question"></p>
+  <p id="verrou" class="muted" hidden>Le coffre est verrouillé : ouvrez l'icône du coffre pour le déverrouiller,
+    la proposition vous y attend (3 minutes).</p>
+  <div class="actions">
+    <button id="oui" class="primary" type="button">Enregistrer</button>
+    <button id="non" type="button">Pas maintenant</button>
+    <button id="jamais" type="button">Jamais pour ce site</button>
+  </div>
+  <p id="erreur" class="alert danger" hidden></p>
+</main>
+<script type="module" src="enregistrer.js"></script>
+</body>
+</html>

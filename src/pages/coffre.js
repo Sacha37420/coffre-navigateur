@@ -2,6 +2,8 @@ import { CoffreError, createVault, MIN_PASSPHRASE, parseKeyFile } from '../lib/c
 import { api, ask, extensionVault, keyFileName } from '../lib/extension.js';
 import { labEndpoints, normalizeLabUrl } from '../lib/lab-config.js';
 import DEFAULTS from '../defaults.js';
+
+const PREFILL_ORIGINS = DEFAULTS.essai ? ['http://127.0.0.1/*'] : ['https://*/*'];
 import { passphraseStrength } from '../lib/strength.js';
 import { AUTO_LOCK_CHOICES, sameKeyFile } from '../lib/vault-state.js';
 
@@ -90,8 +92,32 @@ async function refresh() {
     $('d-autolock').value = String(autoLockMinutes);
   }
   show(st.state);
-  if (st.state === 'deverrouille') await refreshLab();
+  if (st.state === 'deverrouille') { await refreshLab(); await refreshPrefill(); }
 }
+
+// ---------- Préremplissage ----------
+async function refreshPrefill() {
+  const r = await ask('preremplissage_etat');
+  $('pf-state').textContent = r.actif ? 'Activé.' : 'Désactivé.';
+  $('pf-on').hidden = r.actif;
+  $('pf-off').hidden = !r.actif;
+}
+
+$('pf-on').addEventListener('click', async () => {
+  try {
+    // Demandée tout de suite dans le clic (exigence de Firefox), avant toute attente.
+    const granted = await api.permissions.request({ origins: PREFILL_ORIGINS });
+    if (!granted) throw new CoffreError('reglage', 'Sans cet accès, l\'extension ne peut pas repérer les formulaires.');
+    await ask('preremplissage', { actif: true });
+    await refreshPrefill();
+  } catch (e) { fail(e); }
+});
+$('pf-off').addEventListener('click', async () => {
+  try { await ask('preremplissage', { actif: false }); await refreshPrefill(); } catch (e) { fail(e); }
+});
+$('pf-forget').addEventListener('click', async () => {
+  try { await ask('sites_refuses_oublier'); $('pf-state').textContent = 'Sites « Jamais » oubliés.'; } catch (e) { fail(e); }
+});
 
 // ---------- Connexion au lab ----------
 function syncLine(s) {
