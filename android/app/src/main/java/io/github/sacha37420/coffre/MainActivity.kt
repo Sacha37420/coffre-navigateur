@@ -98,6 +98,8 @@ class MainActivity : Activity() {
             VaultState.State.VERROUILLE -> showUnlock()
             VaultState.State.DEVERROUILLE -> showHome()
         }
+        // Numéro de version en bas de chaque écran : permet de vérifier qu'une mise à jour est bien installée.
+        findViewById<TextView>(R.id.version)?.text = getString(R.string.version, packageManager.getPackageInfo(packageName, 0).versionName)
     }
 
     private fun message(e: Throwable): String = (e as? CoffreException)?.message ?: getString(R.string.unexpected)

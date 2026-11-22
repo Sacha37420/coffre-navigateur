@@ -48,4 +48,5 @@
     <string name="file_too_big">Ce fichier n\'est pas un fichier de clé.</string>
     <string name="minutes">%1$d min</string>
     <string name="hours">%1$d h</string>
+    <string name="version">Version %1$s</string>
 </resources>
