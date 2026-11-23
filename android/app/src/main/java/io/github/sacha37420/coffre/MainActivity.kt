@@ -235,8 +235,23 @@ class MainActivity : Activity() {
         setupGenerator()
         setupSettings()
         setupLab()
+        setupSaisie()
         // Au déverrouillage (et à chaque retour sur l'accueil) : un passage de synchronisation si le lab est relié.
         if (coffre.lab?.connected() == true) runSync()
+    }
+
+    // ---------- Saisie automatique ----------
+
+    private fun setupSaisie() {
+        findViewById<Button>(R.id.home_saisie).setOnClickListener { startActivity(Intent(this, SaisieActivity::class.java)) }
+        val on = SaisieActivity.serviceEnabled(this)
+        findViewById<TextView>(R.id.home_saisie_etat).setText(if (on) R.string.saisie_android_ok else R.string.saisie_android_todo)
+        // Après le premier import : le mode d'emploi s'ouvre une fois de lui-même.
+        val prefs = getSharedPreferences("reglages", MODE_PRIVATE)
+        if (!on && !prefs.getBoolean("guide_saisie_vu", false)) {
+            prefs.edit().putBoolean("guide_saisie_vu", true).apply()
+            startActivity(Intent(this, SaisieActivity::class.java))
+        }
     }
 
     // ---------- Connexion au lab ----------

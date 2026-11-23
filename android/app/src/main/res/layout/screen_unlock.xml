@@ -10,7 +10,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <TextView style="@style/Coffre.Title" android:text="@string/unlock_title" />
+        <TextView android:id="@+id/unlock_title" style="@style/Coffre.Title" android:text="@string/unlock_title" />
 
         <EditText
             android:id="@+id/unlock_pass"

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView style="@style/Coffre.Title" android:text="@string/saisie_titre" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="8dp" android:text="@string/saisie_intro" />
+
+        <TextView style="@style/Coffre.Subtitle" android:layout_marginTop="24dp" android:text="@string/saisie_etape1_titre" />
+        <TextView android:id="@+id/saisie_etat_android" style="@style/Coffre.Body" android:layout_marginTop="4dp" android:textStyle="bold" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="4dp" android:text="@string/saisie_etape1" />
+        <Button android:id="@+id/saisie_android" style="@style/Coffre.Button.Primary" android:layout_marginTop="8dp" android:text="@string/saisie_android_bouton" />
+
+        <TextView style="@style/Coffre.Subtitle" android:layout_marginTop="24dp" android:text="@string/saisie_etape2_titre" />
+        <TextView android:id="@+id/saisie_etat_chrome" style="@style/Coffre.Body" android:layout_marginTop="4dp" android:textStyle="bold" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="4dp" android:text="@string/saisie_etape2" />
+        <Button android:id="@+id/saisie_chrome" style="@style/Coffre.Button.Primary" android:layout_marginTop="8dp" android:text="@string/saisie_chrome_bouton" />
+
+        <TextView style="@style/Coffre.Subtitle" android:layout_marginTop="24dp" android:text="@string/saisie_etape3_titre" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="4dp" android:text="@string/saisie_etape3" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="8dp" android:text="@string/saisie_etape3b" />
+        <TextView android:id="@+id/saisie_pret" style="@style/Coffre.Warning" android:layout_marginTop="12dp" android:text="@string/saisie_pret" />
+
+        <TextView style="@style/Coffre.Muted" android:layout_marginTop="16dp" android:text="@string/saisie_securite" />
+
+        <TextView style="@style/Coffre.Subtitle" android:layout_marginTop="24dp" android:text="@string/saisie_ordinateur_titre" />
+        <TextView style="@style/Coffre.Body" android:layout_marginTop="4dp" android:text="@string/saisie_ordinateur" />
+
+        <Button android:id="@+id/saisie_fermer" style="@style/Coffre.Button" android:layout_marginTop="24dp" android:text="@string/saisie_fermer" />
+    </LinearLayout>
+</ScrollView>

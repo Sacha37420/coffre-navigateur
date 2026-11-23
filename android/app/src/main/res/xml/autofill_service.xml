@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Réglages du service : l'écran d'explication sert de page de réglages (bouton ⚙ dans les réglages Android). -->
+<autofill-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:settingsActivity="io.github.sacha37420.coffre.SaisieActivity" />

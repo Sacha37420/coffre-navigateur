@@ -326,12 +326,36 @@ marqué « sensible », vidé après 30 s).
 **Tests à passer avant de clore le lot :**
 - [ ] Tests JVM du modèle et de la recherche ; essai sur téléphone
 
-## Lot 11 — Android : saisie automatique (Chrome et applications)   ·   statut : à faire
-**Objectif :** `AutofillService` : propositions sur les champs de connexion des sites enregistrés
-(origine exacte du site déclarée par Chrome), après déverrouillage ; proposition d'enregistrer.
+## Lot 11 — Android : saisie automatique (Chrome et applications)   ·   statut : en cours
+**Objectif :** l'application devient le service de saisie automatique d'Android : propositions sur les champs de
+connexion des sites enregistrés dans Chrome, proposition d'enregistrer, génération ; et un écran qui explique
+pas à pas comment l'activer.
+**Décisions du propriétaire (2026-11-23) :** lot 11 avant le lot 10 ; « bien intégrer le comment faire » dans l'application.
+**Tâches :**
+- [x] `core` : modèle d'entrée (création, modification, recherche) et correspondance site ↔ entrées, identiques à
+  `src/lib/entries.js` et `src/lib/sites.js` (origine exacte) ; analyse des champs d'un formulaire sur un arbre
+  neutre (testable sur la JVM) : identifiant, mot de passe, création de compte (deux mots de passe / `new-password`)
+- [x] Domaine annoncé **cru seulement s'il vient d'un navigateur fiable** (liste de navigateurs connus ET appli système
+  ou installée depuis le Play Store) : sinon une appli pourrait se dire « banque.fr » et recevoir vos mots de passe.
+  https seulement. Applications (hors navigateur) : rien proposé dans ce lot
+- [x] `AutofillService` (plateforme) : coffre ouvert ⇒ un choix par compte du site (remplissage au toucher) +
+  « Générer un mot de passe » sur une création de compte ; coffre verrouillé ⇒ « Déverrouiller le Coffre du lab »
+  (écran de déverrouillage, puis propositions) ; enregistrement proposé par Android (« Enregistrer dans Coffre du
+  lab ? ») : nouveau compte ou mise à jour, coffre verrouillé ⇒ déverrouiller puis enregistrer ; synchronisation ensuite
+- [x] Écran « Saisie automatique dans Chrome » : état (service Android choisi ? Chrome réglé ?), étapes expliquées,
+  bouton qui ouvre directement le choix du service Android, bouton qui ouvre le réglage de Chrome, et rappel sur
+  l'ordinateur (désactiver le gestionnaire intégré de Chrome) ; proposé après l'import et depuis l'accueil
+- [x] Mode d'emploi de l'extension : désactiver le gestionnaire intégré de Chrome sur l'ordinateur
+- [x] Permission : aucune nouvelle ; `<queries>` des navigateurs connus (vérifier leur authenticité) ; service lié par `BIND_AUTOFILL_SERVICE` seulement
 **Tests à passer avant de clore le lot :**
-- [ ] Tests JVM de la correspondance site ↔ entrée ; essai dans Chrome pour Android (« Saisie
-  automatique avec un autre service ») par le propriétaire
+- [x] Tests JVM : analyse des formulaires (connexion, création, champs sans indice, iframe/autre domaine), origine,
+  navigateur fiable ou non, correspondance exacte, décision d'enregistrement (nouveau / mise à jour / rien)
+- [x] Tests d'écrans (Robolectric) : écran d'explication (états, intentions ouvertes), déverrouillage pour la saisie
+- [ ] Essai dans Chrome pour Android par le propriétaire (service choisi, réglage Chrome, connexion sur un site enregistré)
+**Vérifié le :** 2026-11-23 — `./gradlew :core:test` 48/48, `:app:testDebugUnitTest` 12/12 (navigateur fiable ou non sur
+applications simulées, écran d'explication : états et intentions vers le choix du service Android et le réglage
+de Chrome, guide ouvert une fois après l'import, déverrouillage pour enregistrer et pour remplir),
+`assembleDebug`, `lintDebug` 0 erreur ; npm test et essais Chromium inchangés. Reste : l'essai dans Chrome sur téléphone.
 
 ## Lot 12 — Android : APK signée publiée et mode d'emploi   ·   statut : en cours
 **Objectif :** l'APK signée part avec chaque Release ; lien dans le README ; installation pas à pas.

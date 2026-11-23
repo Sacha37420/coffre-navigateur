@@ -39,4 +39,12 @@ class RenduTest {
     @Test @Config(qualifiers = "w393dp-h851dp-night-xxhdpi") fun importSombre() = capture("import-sombre")
 
     @Test @Config(qualifiers = "w393dp-h1600dp-xxhdpi") fun accueil() = capture("accueil", unlocked = true)
+
+    @Test @Config(qualifiers = "w393dp-h2200dp-xxhdpi") fun saisie() {
+        val a = Robolectric.buildActivity(SaisieActivity::class.java).setup().get()
+        val root: View = a.window.decorView
+        val bmp = Bitmap.createBitmap(root.width, root.height, Bitmap.Config.ARGB_8888)
+        root.draw(Canvas(bmp))
+        File("build/rendus/saisie.png").apply { parentFile!!.mkdirs() }.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
 }

@@ -1,6 +1,6 @@
 {
   "name": "coffre-navigateur",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "description": "Extension de navigateur : coffre de mots de passe chiffré de bout en bout, déposé dans storage du lab.",

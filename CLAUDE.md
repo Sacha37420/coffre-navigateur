@@ -79,3 +79,6 @@ boucle locale accordé d'office.
   mémoire ; le jeton de rafraîchissement n'est écrit que chiffré par la clé du coffre. L'adresse de
   retour reçue n'est jamais journalisée ni affichée.
 - Une synchronisation ne repousse jamais le verrouillage automatique (`peekKey`).
+- Saisie automatique : un domaine web n'est cru que s'il est annoncé par un **navigateur connu ET authentique**
+  (appli système ou installée depuis le Play Store, `Forms.trustedBrowser`) ; https seulement ; origine exacte ;
+  rien n'est rempli sans toucher une proposition. Toute publication = `npm run …` vert puis workflow `publication`.
