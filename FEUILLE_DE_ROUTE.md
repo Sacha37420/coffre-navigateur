@@ -320,11 +320,31 @@ refusé, vrai retour → connecté, synchronisé, rien de clair sur le faux lab,
 `lintDebug` 0 erreur ; APK : `INTERNET` et `USE_BIOMETRIC` seulement, App Link vers
 `https://sacha37420.hopto.org/coffre-retour/` avec `autoVerify`, aucun paquet AndroidX. Reste : l'essai réel.
 
-## Lot 10 — Android : gérer les entrées   ·   statut : à faire
+## Lot 10 — Android : gérer les entrées   ·   statut : en cours
 **Objectif :** liste, recherche, fiche, générateur, affichage avec redemande, copie (presse-papiers
-marqué « sensible », vidé après 30 s).
+marqué « sensible », vidé après 30 s), ajout, modification, suppression — comme la page « Mes mots de passe »
+de l'extension.
+**Décision du propriétaire (2026-11-23) :** lot lancé pendant ses essais réels.
+**Tâches :**
+- [x] `core` : modification complète d'une entrée et pierre tombale, identiques à `editEntry`/`tombstone` de l'extension
+- [x] Écran « Mes mots de passe » : liste triée, recherche (accents et casse ignorés), compteur, « Ajouter »
+- [x] Fiche : nom, sites (un par ligne), identifiant, mot de passe, notes ; copier l'identifiant / le mot de passe ;
+  « Générer » ; enregistrer ; supprimer (confirmation) ; chaque modification part à la synchronisation
+- [x] Afficher un mot de passe : direct si la phrase (ou l'empreinte) date de moins de 5 min, sinon redemandée
+  (phrase, ou empreinte si activée) ; masqué de nouveau après 30 s
+- [x] Coffre verrouillé pendant l'usage (délai, autre écran) : l'écran se ferme et la fiche est vidée
+- [x] Accueil : bouton « Mes mots de passe (N) »
+- [x] Défaut trouvé par les tests et corrigé : changer le type du champ (masqué/affiché) relançait l'observateur de saisie, la fiche croyait le mot de passe modifié et le réaffichait sans redemander la phrase ; on compare désormais le texte au mot de passe enregistré
+- [x] Retour (geste Android 13+) : rappel de la plateforme, confirmation si des modifications ne sont pas enregistrées
 **Tests à passer avant de clore le lot :**
-- [ ] Tests JVM du modèle et de la recherche ; essai sur téléphone
+- [x] Tests JVM du modèle (modification, pierre tombale, horodatage croissant, compatibilité avec l'extension)
+- [x] Tests d'écrans (Robolectric) : liste, recherche, ajout avec génération, modification, affichage direct puis
+  redemande après 5 min (mauvaise phrase refusée), copie marquée sensible, suppression, fermeture au verrouillage
+- [ ] Essai sur téléphone par le propriétaire
+**Vérifié le :** 2026-11-23 — `./gradlew :core:test` 49/49, `:app:testDebugUnitTest` 19/19 (liste triée, recherche sans accent,
+ouverture d'une fiche, ajout avec génération et origine normalisée, affichage direct puis redemande après 5 min avec
+mauvaise phrase refusée, masquer/afficher sans contournement, copie marquée sensible, modification, pierre tombale,
+fermeture et fiche vidée au verrouillage, bouton de l'accueil), `assembleDebug`, `lintDebug` 0 erreur. Reste : l'essai sur téléphone.
 
 ## Lot 11 — Android : saisie automatique (Chrome et applications)   ·   statut : en cours
 **Objectif :** l'application devient le service de saisie automatique d'Android : propositions sur les champs de

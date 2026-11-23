@@ -53,6 +53,22 @@ object Entries {
         return JSONObject(entry.toString()).put("password", password.take(2000)).put("updated", nextStamp(entry.getString("updated"), now))
     }
 
+    /** Modification complète (nom, sites, identifiant, mot de passe, notes) ; `updated` strictement croissant. */
+    fun edit(entry: JSONObject, name: String, origins: List<String>, username: String, password: String, notes: String,
+             now: Long = System.currentTimeMillis()): JSONObject {
+        if (entry.optBoolean("deleted")) throw CoffreException("format", "Cette entrée a été supprimée.")
+        val c = clean(name, origins, username, password, notes)
+        return JSONObject(entry.toString()).put("name", c.getString("name")).put("origins", c.getJSONArray("origins"))
+            .put("username", c.getString("username")).put("password", c.getString("password")).put("notes", c.getString("notes"))
+            .put("updated", nextStamp(entry.getString("updated"), now))
+    }
+
+    /** Suppression : pierre tombale, champs secrets vidés (docs/FORMAT.md §3). */
+    fun tombstone(entry: JSONObject, now: Long = System.currentTimeMillis()): JSONObject = JSONObject()
+        .put("id", entry.getString("id")).put("type", entry.optString("type", "login")).put("name", "").put("origins", JSONArray())
+        .put("username", "").put("password", "").put("notes", "").put("created", entry.getString("created"))
+        .put("updated", nextStamp(entry.getString("updated"), now)).put("deleted", true)
+
     fun origins(e: JSONObject): List<String> = e.optJSONArray("origins")?.let { a -> (0 until a.length()).map { a.getString(it) } } ?: emptyList()
 
     /** Entrées vivantes de l'origine exacte, triées par nom puis identifiant. */

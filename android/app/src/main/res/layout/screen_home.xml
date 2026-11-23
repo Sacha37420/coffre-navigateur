@@ -20,7 +20,8 @@
 
         <TextView android:id="@+id/home_state" style="@style/Coffre.Muted" android:layout_marginTop="4dp" />
 
-        <Button android:id="@+id/home_lock" style="@style/Coffre.Button.Primary" android:layout_marginTop="12dp" android:text="@string/lock" />
+        <Button android:id="@+id/home_entrees" style="@style/Coffre.Button.Primary" android:layout_marginTop="12dp" />
+        <Button android:id="@+id/home_lock" style="@style/Coffre.Button" android:layout_marginTop="8dp" android:text="@string/lock" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -128,7 +129,6 @@
         <Button android:id="@+id/lab_sync" style="@style/Coffre.Button" android:layout_marginTop="8dp" android:text="@string/lab_sync" />
         <Button android:id="@+id/lab_logout" style="@style/Coffre.Button" android:layout_marginTop="8dp" android:text="@string/lab_logout" />
         <TextView android:id="@+id/lab_sync_state" style="@style/Coffre.Muted" android:layout_marginTop="8dp" />
-        <TextView android:id="@+id/entries_count" style="@style/Coffre.Muted" android:layout_marginTop="4dp" />
 
         <TextView style="@style/Coffre.Subtitle" android:layout_marginTop="32dp" android:text="@string/settings_title" />
 
@@ -143,12 +143,6 @@
         <Button android:id="@+id/forget" style="@style/Coffre.Button" android:layout_marginTop="16dp" android:text="@string/forget"
             android:textColor="@color/danger" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="@string/coming"
-            android:textColor="@color/muted" />
         <TextView android:id="@+id/version" style="@style/Coffre.Muted" android:layout_marginTop="24dp" />
     </LinearLayout>
 </ScrollView>

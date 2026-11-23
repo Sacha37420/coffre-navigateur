@@ -134,7 +134,7 @@ class ConnexionTest {
         val b = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         waitFor { b.findViewById<TextView>(R.id.lab_state).text.contains("« moi »") }
         assertEquals(View.VISIBLE, b.findViewById<Button>(R.id.lab_sync).visibility)
-        assertTrue(b.findViewById<TextView>(R.id.entries_count).text.contains("1"))
+        assertTrue(b.findViewById<Button>(R.id.home_entrees).text.contains("(1)"))
 
         // Déconnexion.
         b.findViewById<Button>(R.id.lab_logout).performClick()

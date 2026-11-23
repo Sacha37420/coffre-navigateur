@@ -105,6 +105,25 @@ class AutofillCoreTest {
         assertTrue(CoffreCrypto.decryptEntry(vault, CoffreCrypto.encryptEntry(vault, e2)).similar(e2))
     }
 
+    @Test fun `modification complete et pierre tombale`() {
+        val e = Entries.newEntry("Banque", listOf("banque.fr"), "moi", "p1", "note", now = 1_000)
+        val e2 = Entries.edit(e, " Banque Épargne ", listOf("m.banque.fr", "banque.fr"), "moi2", "p2", "n2", now = 500)
+        assertEquals("Banque Épargne", e2.getString("name"))
+        assertEquals(listOf("https://m.banque.fr", "https://banque.fr"), Entries.origins(e2))
+        assertEquals(e.getString("created"), e2.getString("created"))
+        assertTrue(e2.getString("updated") > e.getString("updated"))
+        val t = Entries.tombstone(e2, now = 2_000)
+        assertTrue(t.getBoolean("deleted"))
+        assertEquals("", t.getString("password"))
+        assertEquals("", t.getString("username"))
+        assertTrue(t.getString("updated") > e2.getString("updated"))
+        assertTrue(Entries.search(listOf(t), "").isEmpty())
+        try { Entries.edit(t, "x", emptyList(), "", "", ""); fail() } catch (ex: CoffreException) { assertEquals("format", ex.code) }
+        try { Entries.edit(e, "", emptyList(), "", "", ""); fail() } catch (ex: CoffreException) { assertEquals("format", ex.code) }
+        // Mêmes champs que l'extension : la pierre tombale de l'extension a exactement ces clés.
+        assertEquals(setOf("id", "type", "name", "origins", "username", "password", "notes", "created", "updated", "deleted"), t.keys().asSequence().toSet())
+    }
+
     @Test fun recherche() {
         val a = Entries.newEntry("Électricité", listOf("edf.fr"), "moi@ex.fr", "p")
         val b = Entries.newEntry("banque", listOf("https://banque.fr"), "compte42", "p")

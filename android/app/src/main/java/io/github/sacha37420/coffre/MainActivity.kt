@@ -236,8 +236,15 @@ class MainActivity : Activity() {
         setupSettings()
         setupLab()
         setupSaisie()
+        findViewById<Button>(R.id.home_entrees).setOnClickListener { startActivity(Intent(this, EntreesActivity::class.java)) }
+        refreshCount()
         // Au déverrouillage (et à chaque retour sur l'accueil) : un passage de synchronisation si le lab est relié.
         if (coffre.lab?.connected() == true) runSync()
+    }
+
+    private fun refreshCount() {
+        val count = vault.peekKey()?.let { v -> coffre.entries.decryptAll(v).first.count { !it.optBoolean("deleted") } } ?: 0
+        findViewById<Button>(R.id.home_entrees)?.text = getString(R.string.entrees_bouton, count)
     }
 
     // ---------- Saisie automatique ----------
@@ -299,7 +306,7 @@ class MainActivity : Activity() {
             getString(R.string.sync_last, java.text.DateFormat.getDateTimeInstance(java.text.DateFormat.SHORT, java.text.DateFormat.SHORT).format(java.util.Date(it.at)), it.text)
         } ?: ""
         val count = vault.peekKey()?.let { v -> coffre.entries.decryptAll(v).first.count { !it.optBoolean("deleted") } } ?: 0
-        findViewById<TextView>(R.id.entries_count)?.text = getString(R.string.entries_count, count)
+        findViewById<Button>(R.id.home_entrees)?.text = getString(R.string.entrees_bouton, count)
     }
 
     private fun runSync() {
@@ -384,19 +391,7 @@ class MainActivity : Activity() {
 
     private fun copy(value: String) {
         if (value.isEmpty()) return
-        val cm = getSystemService(ClipboardManager::class.java)
-        val clip = ClipData.newPlainText(getString(R.string.app_name), value)
-        // Contenu marqué sensible : masqué dans l'aperçu du presse-papiers (Android 13+).
-        clip.description.extras = PersistableBundle().apply {
-            putBoolean(if (Build.VERSION.SDK_INT >= 33) ClipDescription.EXTRA_IS_SENSITIVE else "android.content.extra.IS_SENSITIVE", true)
-        }
-        cm.setPrimaryClip(clip)
+        Presse.copy(this, value)
         Toast.makeText(this, R.string.copied, Toast.LENGTH_SHORT).show()
-        handler.postDelayed({
-            val current = cm.primaryClip?.takeIf { it.itemCount > 0 }?.getItemAt(0)?.text?.toString()
-            if (current == value) {
-                if (Build.VERSION.SDK_INT >= 28) cm.clearPrimaryClip() else cm.setPrimaryClip(ClipData.newPlainText("", ""))
-            }
-        }, CLEAR_MS)
     }
 }

@@ -40,6 +40,26 @@ class RenduTest {
 
     @Test @Config(qualifiers = "w393dp-h1600dp-xxhdpi") fun accueil() = capture("accueil", unlocked = true)
 
+    private fun dessine(a: android.app.Activity, name: String) {
+        val root: View = a.window.decorView
+        val bmp = Bitmap.createBitmap(root.width, root.height, Bitmap.Config.ARGB_8888)
+        root.draw(Canvas(bmp))
+        File("build/rendus/$name.png").apply { parentFile!!.mkdirs() }.outputStream().use { bmp.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
+
+    @Test @Config(qualifiers = "w393dp-h851dp-xxhdpi") fun entrees() {
+        val v = org.json.JSONObject(File(System.getProperty("coffre.racine") ?: "../..", "tests/vecteurs/v1.json").readText())
+        val app = org.robolectric.RuntimeEnvironment.getApplication() as CoffreApp
+        app.vault.install(v.getJSONObject("keyFile"), v.getString("passphrase"))
+        val k = app.vault.key()!!
+        for ((n, s, u) in listOf(Triple("Banque Épargne", "banque.fr", "client42"), Triple("Messagerie", "mail.exemple.fr", "moi@exemple.fr"), Triple("Impôts", "impots.gouv.fr", "1234567890123"))) {
+            app.entries.put(k, io.github.sacha37420.coffre.core.Entries.newEntry(n, listOf(s), u, "x7!kQ2#pLm9\$wR4z"))
+        }
+        dessine(Robolectric.buildActivity(EntreesActivity::class.java).setup().get(), "entrees")
+        val id = app.entries.decryptAll(k).first.first { it.getString("name") == "Banque Épargne" }.getString("id")
+        dessine(Robolectric.buildActivity(FicheActivity::class.java, android.content.Intent(app, FicheActivity::class.java).putExtra(FicheActivity.EXTRA_ID, id)).setup().get(), "fiche")
+    }
+
     @Test @Config(qualifiers = "w393dp-h2200dp-xxhdpi") fun saisie() {
         val a = Robolectric.buildActivity(SaisieActivity::class.java).setup().get()
         val root: View = a.window.decorView

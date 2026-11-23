@@ -121,8 +121,7 @@ class EcransTest {
         b.v<Button>(R.id.forget).performClick()
         val dialog = org.robolectric.shadows.ShadowAlertDialog.getLatestAlertDialog()
         dialog.getButton(android.content.DialogInterface.BUTTON_POSITIVE).performClick()
-        shadowOf(Looper.getMainLooper()).idle()
-        assertEquals(VaultState.State.AUCUN, vault.state())
+        waitFor { vault.state() == VaultState.State.AUCUN && b.findViewById<Button>(R.id.choose) != null }   // retrait hors du fil de l'interface
         assertFalse(File(b.filesDir, "cle.coffre-cle").exists())
         assertNotNull(b.findViewById<Button>(R.id.choose))
     }

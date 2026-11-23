@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView android:id="@+id/f_titre" style="@style/Coffre.Title" />
+
+        <TextView style="@style/Coffre.Muted" android:layout_marginTop="12dp" android:labelFor="@id/f_nom" android:text="@string/fiche_nom" />
+        <EditText android:id="@+id/f_nom" style="@style/Coffre.Field" android:importantForAutofill="no" android:inputType="text" />
+
+        <TextView style="@style/Coffre.Muted" android:layout_marginTop="8dp" android:labelFor="@id/f_sites" android:text="@string/fiche_sites" />
+        <EditText android:id="@+id/f_sites" style="@style/Coffre.Field" android:importantForAutofill="no"
+            android:inputType="textUri|textMultiLine" android:minLines="1" />
+
+        <TextView style="@style/Coffre.Muted" android:layout_marginTop="8dp" android:labelFor="@id/f_identifiant" android:text="@string/fiche_identifiant" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <EditText android:id="@+id/f_identifiant" style="@style/Coffre.Field" android:layout_width="0dp" android:layout_weight="1"
+                android:importantForAutofill="no" android:inputType="text" />
+            <Button android:id="@+id/f_copier_id" style="@style/Coffre.Button" android:layout_width="wrap_content" android:text="@string/fiche_copier" />
+        </LinearLayout>
+
+        <TextView style="@style/Coffre.Muted" android:layout_marginTop="8dp" android:labelFor="@id/f_mdp" android:text="@string/fiche_mot_de_passe" />
+        <EditText android:id="@+id/f_mdp" style="@style/Coffre.Field" android:fontFamily="monospace"
+            android:importantForAutofill="no" android:inputType="textPassword" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/f_afficher" style="@style/Coffre.Button" android:layout_width="0dp" android:layout_weight="1" android:text="@string/fiche_afficher" />
+            <Button android:id="@+id/f_copier_mdp" style="@style/Coffre.Button" android:layout_width="0dp" android:layout_weight="1" android:text="@string/fiche_copier" />
+            <Button android:id="@+id/f_generer" style="@style/Coffre.Button" android:layout_width="0dp" android:layout_weight="1" android:text="@string/fiche_generer" />
+        </LinearLayout>
+
+        <TextView style="@style/Coffre.Muted" android:layout_marginTop="8dp" android:labelFor="@id/f_notes" android:text="@string/fiche_notes" />
+        <EditText android:id="@+id/f_notes" style="@style/Coffre.Field" android:importantForAutofill="no"
+            android:inputType="textMultiLine" android:minLines="2" />
+
+        <TextView android:id="@+id/f_msg" style="@style/Coffre.Error" android:layout_marginTop="8dp" android:visibility="gone" />
+
+        <Button android:id="@+id/f_enregistrer" style="@style/Coffre.Button.Primary" android:layout_marginTop="16dp" android:text="@string/fiche_enregistrer" />
+        <Button android:id="@+id/f_supprimer" style="@style/Coffre.Button" android:layout_marginTop="8dp" android:text="@string/fiche_supprimer"
+            android:textColor="@color/danger" />
+        <TextView android:id="@+id/f_meta" style="@style/Coffre.Muted" android:layout_marginTop="12dp" />
+    </LinearLayout>
+</ScrollView>

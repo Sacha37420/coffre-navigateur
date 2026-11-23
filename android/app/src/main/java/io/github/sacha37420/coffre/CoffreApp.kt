@@ -28,6 +28,8 @@ class CoffreApp : Application() {
         private set
     /** Remplaçable par les tests. */
     var http: Http = UrlConnectionHttp()
+    /** Tests seulement : avance l'horloge du coffre (délais de verrouillage et de redemande de la phrase). */
+    var clockOffsetForTests = 0L
     /** null si l'APK a été construite sans adresse de lab. */
     var lab: LabSession? = null
         private set
@@ -36,7 +38,7 @@ class CoffreApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        vault = VaultState(FileVaultStorage(this))
+        vault = VaultState(FileVaultStorage(this)) { System.currentTimeMillis() + clockOffsetForTests }
         biometrie = Biometrie(this)
         entries = EntryStore(AtomicJsonFile(File(filesDir, "entrees.json")))
         setupLab(getString(R.string.lab_origin))
