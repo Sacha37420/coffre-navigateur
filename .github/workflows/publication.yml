@@ -5,7 +5,7 @@
 # que pointent les liens « releases/latest/download/… » du README.
 #
 # Réglages du dépôt (Settings → Secrets and variables → Actions) :
-#   variable LAB_URL         adresse du lab préremplie dans l'extension (https://domaine), facultative
+#   variable LAB_URL         adresse du lab préremplie (par défaut : celle écrite plus bas), facultative
 #   secret   AMO_JWT_ISSUER  clé d'API addons.mozilla.org (« JWT issuer »), facultative
 #   secret   AMO_JWT_SECRET  secret associé ; sans ces deux secrets, Firefox est publié NON signé
 #   secrets  ANDROID_KEYSTORE_B64, ANDROID_KEYSTORE_PASSWORD, ANDROID_KEY_ALIAS, ANDROID_KEY_PASSWORD
@@ -28,7 +28,8 @@ jobs:
   paquets:
     runs-on: ubuntu-24.04
     env:
-      LAB_URL: ${{ vars.LAB_URL }}
+      # Adresse du lab préremplie (décision du propriétaire : publique) ; la variable de dépôt LAB_URL la remplace.
+      LAB_URL: ${{ vars.LAB_URL || 'https://sacha37420.hopto.org' }}
       AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
       AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
       ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}

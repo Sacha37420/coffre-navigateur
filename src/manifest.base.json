@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Coffre du lab",
   "short_name": "Coffre",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Mots de passe chiffrés dans votre navigateur ; clé gardée sur votre clé USB.",
   "default_locale": "fr",
   "action": {
